@@ -47,9 +47,9 @@ OS_EVENT *g_sem_end;
 
 UART_CCB g_uart_ccb[MAX_COM_PORT];
 
-U8 g_UartLcdRxBuf[USART_RECEIVE_BUF_SIZE];
-U8 g_UartcPLCRxBuf[USART_RECEIVE_BUF_SIZE];
-U8 g_UartmPLCRxBuf[USART_RECEIVE_BUF_SIZE];
+U8 g_UartLcdRxBuf[UART_RECEIVE_BUF_SIZE];
+U8 g_UartcPLCRxBuf[UART_RECEIVE_BUF_SIZE];
+U8 g_UartmPLCRxBuf[UART_RECEIVE_BUF_SIZE];
 
 U8 *pUartRxBuf[] = {
     g_UartLcdRxBuf,
@@ -105,7 +105,7 @@ void End_Init(void)
 
         pEndObj->recv_timeout = 0;
 
-        UART_ReceiveData(i, pEndObj->end_recv_buffer, USART_RECEIVE_BUF_SIZE);
+        UART_ReceiveData(i, pEndObj->end_recv_buffer, UART_RECEIVE_BUF_SIZE);
 
         // 所有串口状态转到REVC STATUS
         pEndObj->end_send_status = END_STATUS_IDLE;
@@ -371,9 +371,9 @@ unsigned char End_check_recv(P_END_OBJ pEndObj)
     if(p_uc->gpUartRxReadAddress <= p_uc->gpUartRxAddress)
         pEndObj->receive_len = p_uc->gpUartRxAddress - p_uc->gpUartRxReadAddress;//gIic0RxCnt;
     else
-        pEndObj->receive_len = (USHORT)((ULONG)p_uc->gpUartRxAddress + USART_RECEIVE_BUF_SIZE - (ULONG)p_uc->gpUartRxReadAddress);
+        pEndObj->receive_len = (USHORT)((ULONG)p_uc->gpUartRxAddress + UART_RECEIVE_BUF_SIZE - (ULONG)p_uc->gpUartRxReadAddress);
 
-    if(pEndObj->receive_len > (220))//if(pEndObj->receive_len > (USART_RECEIVE_BUF_SIZE/2))
+    if(pEndObj->receive_len > (220))//if(pEndObj->receive_len > (UART_RECEIVE_BUF_SIZE/2))
     {
         pEndObj->recv_timeout = 0;
         return TRUE;

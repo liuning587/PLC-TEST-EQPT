@@ -4,7 +4,7 @@
  * @details  
  * @author   华兄
  * @email    591881218@qq.com
- * @date     2014
+ * @date     2015
  * @version  vX.XX
  * @par Copyright (c):  
  *           深圳市合尔凯科技有限公司
@@ -267,6 +267,8 @@ static  void  App_TaskPlc (void *p_arg)
     (void)p_arg;  
 
 #if (mPLC_REPLY_ADDR_FIRST > 0u)
+    OSTimeDlyHMSM(0, 0, 0, 500);
+
     for(i = 0; i < mPLC_NUM; i++)
     {
         mPLC_SELECT(i);
@@ -292,59 +294,6 @@ static  void  App_TaskPlc (void *p_arg)
 #endif
 
     while (DEF_TRUE) {
-#if (PLC_TEST_DIRECT > 0u)
-
-#if (PLC_TEST_FREQ_FIRST > 0u)
-        FREQ_SELECT(FREQ_270KHz);
-
-        for(i = 0; i < mPLC_NUM; i++)
-        {
-            mPLC_SELECT(i);
-            g_cur_mplc = i;
-
-            mPLC_RESET_LOW();
-            OSTimeDlyHMSM(0, 0, 0, 100);
-            mPLC_RESET_HIGH();
-            
-            OSTimeDlyHMSM(0, 0, 1, 0);
-            
-            for(j = 0; j < FREQ_NUM; j++)
-            {
-                g_cur_freq = j;
-
-                OS_ENTER_CRITICAL();
-                g_sta_level[g_cur_mplc][g_cur_freq] = FALSE;
-                OS_EXIT_CRITICAL();
-
-                g_sta_level_flag = TRUE;
-                        
-                cplc_read_energy();
-
-                OSTimeDlyHMSM(0, 0, 2, 0);
-
-                OSSemPend(g_sem_plc, OS_TICKS_PER_SEC, &err);
-
-                if(OS_ERR_NONE != err)
-                {
-                    OS_ENTER_CRITICAL();
-                    g_mplc_state[g_cur_mplc][g_cur_freq] = FALSE;
-                    OS_EXIT_CRITICAL();
-                }   
-
-                g_sta_level_flag = FALSE;
-
-                if(FREQ_270KHz == j)
-                {
-                    OSTimeDlyHMSM(0, 0, 3, 0);
-                }
-                else
-                {
-                    mPLC_RESET_LOW();
-                    OSTimeDlyHMSM(0, 0, 0, 100);
-                }
-            }
-        }
-#else
         FREQ_SELECT(FREQ_270KHz);
 
         for(i = 0; i < FREQ_NUM; i++)
@@ -370,20 +319,20 @@ static  void  App_TaskPlc (void *p_arg)
                 OS_EXIT_CRITICAL();
 
                 g_sta_level_flag = TRUE;
+
+                OSSemAccept(g_sem_plc);
             
                 cplc_read_energy();
 
                 if(FREQ_270KHz == i)
                 {
-                    OSTimeDlyHMSM(0, 0, 2, 500);
+                    OSSemPend(g_sem_plc, 2500, &err);
                 }
                 else
                 {
-                    OSTimeDlyHMSM(0, 0, 1, 500);
+                    OSSemPend(g_sem_plc, 1500, &err);
                 }
 
-                OSSemPend(g_sem_plc, OS_TICKS_PER_SEC / 50, &err);
-
                 if(OS_ERR_NONE != err)
                 {
                     OS_ENTER_CRITICAL();
@@ -394,118 +343,6 @@ static  void  App_TaskPlc (void *p_arg)
                 g_sta_level_flag = FALSE;
             }
         }
-#endif
-
-#else
-
-#if (PLC_TEST_FREQ_FIRST > 0u)
-        for(i = 0; i < mPLC_NUM; i++)
-        {
-            mPLC_SELECT(i);
-            g_cur_mplc = i;          
-
-            for(j = 0; j < FREQ_NUM; j++)
-            {
-                mPLC_PWR_OFF();
-                OSTimeDlyHMSM(0, 0, 0, 100);
-                
-                FREQ_SELECT(j);
-                g_cur_freq = j;
-                OSTimeDlyHMSM(0, 0, 0, 100);
-                
-                mPLC_PWR_ON();
-                OSTimeDlyHMSM(0, 0, 0, 500);
-
-                mPLC_RESET_LOW();
-                OSTimeDlyHMSM(0, 0, 0, 100);
-                mPLC_RESET_HIGH();
-                
-                OSTimeDlyHMSM(0, 0, 1, 0); 
-
-                OS_ENTER_CRITICAL();
-                g_sta_level[g_cur_mplc][g_cur_freq] = FALSE;
-                OS_EXIT_CRITICAL();
-
-                g_sta_level_flag = TRUE;
-            
-                cplc_read_energy();
-
-                OSTimeDlyHMSM(0, 0, 2, 0);
-
-                OSSemPend(g_sem_plc, OS_TICKS_PER_SEC, &err);
-
-                if(OS_ERR_NONE != err)
-                {
-                    OS_ENTER_CRITICAL();
-                    g_mplc_state[g_cur_mplc][g_cur_freq] = FALSE;
-                    OS_EXIT_CRITICAL();
-                }   
-
-                g_sta_level_flag = FALSE;
-
-                if(FREQ_270KHz == j)
-                {
-                    OSTimeDlyHMSM(0, 0, 3, 0);
-                }
-                else
-                {
-                    mPLC_RESET_LOW();
-                    OSTimeDlyHMSM(0, 0, 0, 100);
-                }              
-            }
-        }
-#else
-        for(i = 0; i < FREQ_NUM; i++)
-        {
-            mPLC_PWR_OFF();
-            OSTimeDlyHMSM(0, 0, 0, 100);
-            
-            FREQ_SELECT(i);
-            g_cur_freq = i;
-            OSTimeDlyHMSM(0, 0, 0, 100);
-            
-            mPLC_PWR_ON();
-            OSTimeDlyHMSM(0, 0, 0, 500);
-            
-            for(j = 0; j < mPLC_NUM; j++)
-            {
-                mPLC_SELECT(j);
-                g_cur_mplc = j;          
-
-                mPLC_RESET_LOW();
-                OSTimeDlyHMSM(0, 0, 0, 100);
-                mPLC_RESET_HIGH();
-
-                OSTimeDlyHMSM(0, 0, 1, 0);   
-
-                OS_ENTER_CRITICAL();
-                g_sta_level[g_cur_mplc][g_cur_freq] = FALSE;
-                OS_EXIT_CRITICAL();
-
-                g_sta_level_flag = TRUE;
-            
-                cplc_read_energy();
-
-                OSTimeDlyHMSM(0, 0, 2, 0);
-
-                OSSemPend(g_sem_plc, OS_TICKS_PER_SEC, &err);
-
-                if(OS_ERR_NONE != err)
-                {
-                    OS_ENTER_CRITICAL();
-                    g_mplc_state[g_cur_mplc][g_cur_freq] = FALSE;
-                    OS_EXIT_CRITICAL();
-                }   
-
-                g_sta_level_flag = FALSE;
-
-                mPLC_RESET_LOW();
-                OSTimeDlyHMSM(0, 0, 0, 100);                
-            }
-        }
-#endif
-
-#endif
 
         beep_on();
     }
@@ -540,9 +377,9 @@ static  void  App_TaskDisp (void *p_arg)
     (void)p_arg;  
 
     while (DEF_TRUE) {     
-        lcd_read_id();
-
-        OSTimeDlyHMSM(0, 0, 0, LCD_DISP_TIME);          
+        OSSemAccept(g_sem_disp);
+        
+        lcd_read_id();         
 
         OSSemPend(g_sem_disp, OS_TICKS_PER_SEC, &err);
 
@@ -767,7 +604,7 @@ static  void  App_TaskCreate (void)
                     (void           *) 0,
                     (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 
-    OSTaskNameSet(APP_CFG_TASK_DISP_PRIO, "Key", &err);
+    OSTaskNameSet(APP_CFG_TASK_KEY_PRIO, "Key", &err);
 
     OSTaskCreateExt((void (*)(void *)) App_TaskEndTick,
                     (void           *) 0,
@@ -779,7 +616,7 @@ static  void  App_TaskCreate (void)
                     (void           *) 0,
                     (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 
-    OSTaskNameSet(APP_CFG_TASK_DISP_PRIO, "EndTick", &err);
+    OSTaskNameSet(APP_CFG_TASK_END_TICK_PRIO, "EndTick", &err);
 
     OSTaskCreateExt((void (*)(void *)) App_TaskEndProc,
                     (void           *) 0,
@@ -791,7 +628,7 @@ static  void  App_TaskCreate (void)
                     (void           *) 0,
                     (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 
-    OSTaskNameSet(APP_CFG_TASK_DISP_PRIO, "EndProc", &err);    
+    OSTaskNameSet(APP_CFG_TASK_END_PROC_PRIO, "EndProc", &err);    
 
     OSTaskCreateExt((void (*)(void *)) App_TaskPlc,
                     (void           *) 0,
@@ -803,7 +640,7 @@ static  void  App_TaskCreate (void)
                     (void           *) 0,
                     (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 
-    OSTaskNameSet(APP_CFG_TASK_DISP_PRIO, "PLC", &err);    
+    OSTaskNameSet(APP_CFG_TASK_PLC_PRIO, "PLC", &err);    
     
     OSTaskCreateExt((void (*)(void *)) App_TaskDisp,
                     (void           *) 0,

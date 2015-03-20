@@ -6,9 +6,6 @@
 #endif
 
 
-#define PLC_TEST_DIRECT        1u
-#define PLC_TEST_FREQ_FIRST    0u
-
 #define mPLC_REPLY_ADDR_FIRST  1u
 
 #define CFG_USE_DATA_BLOCK
