@@ -251,7 +251,7 @@ P_END_OBJ End_get_end_obj(UCHAR end_id)
 
 U32 End_uart_send(UCHAR end_id, UCHAR *txbuf, USHORT txnum)
 {
-    USART_TypeDef *USARx;
+    USART_TypeDef *USARTx;
     P_UART_CCB p_uc;
     UCHAR send_byte = 0;
     
@@ -264,15 +264,15 @@ U32 End_uart_send(UCHAR end_id, UCHAR *txbuf, USHORT txnum)
     switch(end_id)
     {    
     case LCD_COM_PORT:      
-        USARx = LCD_UART;
+        USARTx = LCD_UART;
         break; 
         
     case cPLC_COM_PORT:      
-        USARx = cPLC_UART;
+        USARTx = cPLC_UART;
         break; 
         
     case mPLC_COM_PORT:      
-        USARx = mPLC_UART;
+        USARTx = mPLC_UART;
         break; 
         
     default:
@@ -289,10 +289,10 @@ U32 End_uart_send(UCHAR end_id, UCHAR *txbuf, USHORT txnum)
     p_uc->gpUartTxAddress++;
     p_uc->gUartTxCnt--;
 
-    USART_SendData(USARx, send_byte);
+    USART_SendData(USARTx, send_byte);
 
     if(p_uc->gUartTxCnt)
-        USART_ITConfig(USARx, USART_IT_TXE, ENABLE);
+        USART_ITConfig(USARTx, USART_IT_TXE, ENABLE);
 
     return TRUE;
 }
@@ -471,12 +471,12 @@ unsigned char End_IsIdle(P_END_OBJ pEndObj)
 
 }
 
-void USART_IRQProc(UART_CCB *uccb, USART_TypeDef *USARx)
+void USART_IRQProc(UART_CCB *uccb, USART_TypeDef *USARTx)
 {
-  if(USART_GetITStatus(USARx, USART_IT_RXNE) != RESET)
+  if(USART_GetITStatus(USARTx, USART_IT_RXNE) != RESET)
   {
     /* Read one byte from the receive data register */    
-    *(uccb->gpUartRxAddress) = USART_ReceiveData(USARx);
+    *(uccb->gpUartRxAddress) = USART_ReceiveData(USARTx);
     uccb->gpUartRxAddress++;
 
     if(uccb->gpUartRxAddress == uccb->gpUartRxEndAddress)
@@ -495,18 +495,18 @@ void USART_IRQProc(UART_CCB *uccb, USART_TypeDef *USARx)
 #endif
   }
 
-  if(USART_GetITStatus(USARx, USART_IT_TXE) != RESET)
+  if(USART_GetITStatus(USARTx, USART_IT_TXE) != RESET)
   {   
     /* Write one byte to the transmit data register */
     if( uccb->gUartTxCnt > 0 )
     {
-        USART_SendData(USARx, *(uccb->gpUartTxAddress));
+        USART_SendData(USARTx, *(uccb->gpUartTxAddress));
     	uccb->gpUartTxAddress++;   	
     	uccb->gUartTxCnt--;
 	}
     else
     {        
-        USART_ITConfig(USARx, USART_IT_TXE, DISABLE);
+        USART_ITConfig(USARTx, USART_IT_TXE, DISABLE);
     }
 
 #if (LED_UART_EN > 0u)
