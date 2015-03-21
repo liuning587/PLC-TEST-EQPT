@@ -322,14 +322,12 @@ static  void  App_TaskPlc (void *p_arg)
 
                 if(FREQ_270KHz == i)
                 {
-                    OSTimeDlyHMSM(0, 0, 2, 500);
+                    OSSemPend(g_sem_plc, 2500, &err);
                 }
                 else
                 {
-                    OSTimeDlyHMSM(0, 0, 1, 500);
+                    OSSemPend(g_sem_plc, 1500, &err);
                 }
-
-                OSSemPend(g_sem_plc, 20, &err);
 
                 if(OS_ERR_NONE != err)
                 {
@@ -378,8 +376,6 @@ static  void  App_TaskDisp (void *p_arg)
         OSSemAccept(g_sem_disp);
         
         lcd_read_id();       
-
-        OSTimeDlyHMSM(0, 0, 0, LCD_DISP_TIME);
 
         OSSemPend(g_sem_disp, OS_TICKS_PER_SEC, &err);
 
