@@ -182,7 +182,7 @@ void EXTI15_10_IRQHandler(void)
   */
 void USART1_IRQHandler(void)
 {
-    USART_IRQProc(&g_uart_ccb[mPLC_COM_PORT], mPLC_USART);    
+    USART_IRQProc(&g_uart_ccb[mPLC_COM_PORT], mPLC_UART);    
 }
 
 /**
@@ -192,7 +192,7 @@ void USART1_IRQHandler(void)
   */
 void USART2_IRQHandler(void)
 {
-    USART_IRQProc(&g_uart_ccb[cPLC_COM_PORT], cPLC_USART);    
+    USART_IRQProc(&g_uart_ccb[cPLC_COM_PORT], cPLC_UART);    
 }
 
 /**
@@ -202,7 +202,7 @@ void USART2_IRQHandler(void)
   */
 void USART3_IRQHandler(void)
 {
-    USART_IRQProc(&g_uart_ccb[LCD_COM_PORT], LCD_USART);    
+    USART_IRQProc(&g_uart_ccb[LCD_COM_PORT], LCD_UART);    
 }
 
 /******************************************************************************/

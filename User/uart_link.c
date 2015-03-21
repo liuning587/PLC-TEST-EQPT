@@ -10,9 +10,9 @@ END_OBJ g_EndObjectPool[MAX_COM_PORT] =
 
 const pvoid g_EndObject[END_OBJECT_NUM] =
 {
-	LCD_USART,
-    cPLC_USART,
-    mPLC_USART,
+	LCD_UART,
+    cPLC_UART,
+    mPLC_UART,
 };
 
 queue *g_EndTxQueue[MAX_COM_PORT] = {NULL};
@@ -249,13 +249,14 @@ P_END_OBJ End_get_end_obj(UCHAR end_id)
     return NULL;
 }
 
-U32 End_uart_send(UCHAR end_id,  UCHAR* txbuf, USHORT    txnum )
+U32 End_uart_send(UCHAR end_id, UCHAR *txbuf, USHORT txnum)
 {
-    USART_TypeDef * USARx;
+    USART_TypeDef *USARx;
     P_UART_CCB p_uc;
-    UCHAR      send_byte=0;
+    UCHAR send_byte = 0;
+    
 
-    if( txnum < 1 )
+    if(txnum < 1)
     {
         return FALSE;
     }
@@ -263,15 +264,15 @@ U32 End_uart_send(UCHAR end_id,  UCHAR* txbuf, USHORT    txnum )
     switch(end_id)
     {    
     case LCD_COM_PORT:      
-        USARx = LCD_USART;
+        USARx = LCD_UART;
         break; 
         
     case cPLC_COM_PORT:      
-        USARx = cPLC_USART;
+        USARx = cPLC_UART;
         break; 
         
     case mPLC_COM_PORT:      
-        USARx = mPLC_USART;
+        USARx = mPLC_UART;
         break; 
         
     default:
@@ -288,14 +289,13 @@ U32 End_uart_send(UCHAR end_id,  UCHAR* txbuf, USHORT    txnum )
     p_uc->gpUartTxAddress++;
     p_uc->gUartTxCnt--;
 
-
     USART_SendData(USARx, send_byte);
 
     if(p_uc->gUartTxCnt)
         USART_ITConfig(USARx, USART_IT_TXE, ENABLE);
 
     return TRUE;
-};
+}
 
 /***********************************************************
 pEndObj:  ·¢ËÍ½Ó¿Ú

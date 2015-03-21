@@ -266,7 +266,6 @@ static  void  App_TaskPlc (void *p_arg)
     
     (void)p_arg;  
 
-#if (mPLC_REPLY_ADDR_FIRST > 0u)
     OSTimeDlyHMSM(0, 0, 0, 500);
 
     for(i = 0; i < mPLC_NUM; i++)
@@ -289,9 +288,6 @@ static  void  App_TaskPlc (void *p_arg)
     OSTimeDlyHMSM(0, 0, 2, 0);
 
     LED_mPLC_OFF();
-#else
-    OSTimeDlyHMSM(0, 0, 1, 0);
-#endif
 
     while (DEF_TRUE) {
         FREQ_SELECT(FREQ_270KHz);
@@ -326,12 +322,14 @@ static  void  App_TaskPlc (void *p_arg)
 
                 if(FREQ_270KHz == i)
                 {
-                    OSSemPend(g_sem_plc, 2500, &err);
+                    OSTimeDlyHMSM(0, 0, 2, 500);
                 }
                 else
                 {
-                    OSSemPend(g_sem_plc, 1500, &err);
+                    OSTimeDlyHMSM(0, 0, 1, 500);
                 }
+
+                OSSemPend(g_sem_plc, 20, &err);
 
                 if(OS_ERR_NONE != err)
                 {
@@ -379,7 +377,9 @@ static  void  App_TaskDisp (void *p_arg)
     while (DEF_TRUE) {     
         OSSemAccept(g_sem_disp);
         
-        lcd_read_id();         
+        lcd_read_id();       
+
+        OSTimeDlyHMSM(0, 0, 0, LCD_DISP_TIME);
 
         OSSemPend(g_sem_disp, OS_TICKS_PER_SEC, &err);
 

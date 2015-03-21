@@ -6,8 +6,6 @@
 #endif
 
 
-#define mPLC_REPLY_ADDR_FIRST  1u
-
 #define CFG_USE_DATA_BLOCK
 
 #define LED_PLC_TOGGLE()       LED_Toggle(LED_PLC)

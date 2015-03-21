@@ -18,9 +18,9 @@
 
 #define END_OBJECT_NUM        MAX_COM_PORT
 
-#define LCD_USART             USART3
-#define cPLC_USART            USART2
-#define mPLC_USART            USART1
+#define LCD_UART              USART3
+#define cPLC_UART             USART2
+#define mPLC_UART             USART1
 
 #define END_TX_QUEUE_SIZE          5
 #define END_RX_QUEUE_SIZE          5 
