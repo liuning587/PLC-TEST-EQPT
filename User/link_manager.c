@@ -77,9 +77,7 @@ P_MSG_INFO alloc_send_buffer(unsigned char type)
     P_MSG_INFO pmsg = NULL;
     P_MSG_INFO *pool = NULL;
     unsigned short i;
-#if OS_CRITICAL_METHOD == 3                      /* Allocate storage for CPU status register           */
-    OS_CPU_SR  cpu_sr = 0;
-#endif
+    OS_CPU_SR  cpu_sr;
 
 
     if( type == MSG_LARGE)
@@ -119,7 +117,7 @@ P_MSG_INFO alloc_send_buffer(unsigned char type)
     if( i >= GET_MAX_MSG(type) )
         return NULL;
    
-    memset(pmsg->msg_buffer, 0xff, UART_RECEIVE_BUF_SIZE);
+    memset(pmsg->msg_buffer, 0xff, UART_RECV_BUF_SIZE);
 
     /* 统计计数递减*/
     //FreeMSGTxCnt--;
@@ -149,9 +147,7 @@ unsigned char free_send_buffer(pvoid pmsg )
     unsigned char i = 0, type;
     P_MSG_INFO	pfree = (P_MSG_INFO)pmsg;
     P_MSG_INFO	*pool = NULL;
-#if OS_CRITICAL_METHOD == 3                      /* Allocate storage for CPU status register           */
-    OS_CPU_SR  cpu_sr = 0;
-#endif
+    OS_CPU_SR  cpu_sr;
 
 
     if(pfree->msg_header.block_state == FREE)

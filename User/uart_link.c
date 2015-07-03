@@ -47,9 +47,9 @@ OS_EVENT *g_sem_end;
 
 UART_CCB g_uart_ccb[MAX_COM_PORT];
 
-U8 g_UartLcdRxBuf[UART_RECEIVE_BUF_SIZE];
-U8 g_UartcPLCRxBuf[UART_RECEIVE_BUF_SIZE];
-U8 g_UartmPLCRxBuf[UART_RECEIVE_BUF_SIZE];
+U8 g_UartLcdRxBuf[UART_RECV_BUF_SIZE];
+U8 g_UartcPLCRxBuf[UART_RECV_BUF_SIZE];
+U8 g_UartmPLCRxBuf[UART_RECV_BUF_SIZE];
 
 U8 *pUartRxBuf[] = {
     g_UartLcdRxBuf,
@@ -59,9 +59,7 @@ U8 *pUartRxBuf[] = {
 
 U32 UART_ReceiveData(U8 end_id, UCHAR* rxbuf, USHORT rxnum)
 {
-#if OS_CRITICAL_METHOD == 3                                /* Allocate storage for CPU status register     */
-    OS_CPU_SR  cpu_sr = 0;
-#endif
+    OS_CPU_SR  cpu_sr;
     P_UART_CCB p_uc = &g_uart_ccb[end_id];
 
     if( (rxnum < 1) || (end_id >= MAX_COM_PORT) )
@@ -105,7 +103,7 @@ void End_Init(void)
 
         pEndObj->recv_timeout = 0;
 
-        UART_ReceiveData(i, pEndObj->end_recv_buffer, UART_RECEIVE_BUF_SIZE);
+        UART_ReceiveData(i, pEndObj->end_recv_buffer, UART_RECV_BUF_SIZE);
 
         // 所有串口状态转到REVC STATUS
         pEndObj->end_send_status = END_STATUS_IDLE;
@@ -120,9 +118,7 @@ Tick任务调用，检查每个END接口是否有新的frame收完
 ************************************************************/
 unsigned short End_tick_check(void)
 {
-#if OS_CRITICAL_METHOD == 3                                /* Allocate storage for CPU status register     */
-    OS_CPU_SR  cpu_sr = 0;
-#endif
+    OS_CPU_SR  cpu_sr;
     unsigned char i;
     U16 cp_len, msg_len;
 
@@ -251,7 +247,7 @@ P_END_OBJ End_get_end_obj(UCHAR end_id)
 
 U32 End_uart_send(UCHAR end_id, UCHAR *txbuf, USHORT txnum)
 {
-    USART_TypeDef *USARTx;
+    USART_TypeDef *UARTx;
     P_UART_CCB p_uc;
     UCHAR send_byte = 0;
     
@@ -264,15 +260,15 @@ U32 End_uart_send(UCHAR end_id, UCHAR *txbuf, USHORT txnum)
     switch(end_id)
     {    
     case LCD_COM_PORT:      
-        USARTx = LCD_UART;
+        UARTx = LCD_UART;
         break; 
         
     case cPLC_COM_PORT:      
-        USARTx = cPLC_UART;
+        UARTx = cPLC_UART;
         break; 
         
     case mPLC_COM_PORT:      
-        USARTx = mPLC_UART;
+        UARTx = mPLC_UART;
         break; 
         
     default:
@@ -289,10 +285,10 @@ U32 End_uart_send(UCHAR end_id, UCHAR *txbuf, USHORT txnum)
     p_uc->gpUartTxAddress++;
     p_uc->gUartTxCnt--;
 
-    USART_SendData(USARTx, send_byte);
+    USART_SendData(UARTx, send_byte);
 
     if(p_uc->gUartTxCnt)
-        USART_ITConfig(USARTx, USART_IT_TXE, ENABLE);
+        USART_ITConfig(UARTx, USART_IT_TXE, ENABLE);
 
     return TRUE;
 }
@@ -371,9 +367,9 @@ unsigned char End_check_recv(P_END_OBJ pEndObj)
     if(p_uc->gpUartRxReadAddress <= p_uc->gpUartRxAddress)
         pEndObj->receive_len = p_uc->gpUartRxAddress - p_uc->gpUartRxReadAddress;//gIic0RxCnt;
     else
-        pEndObj->receive_len = (USHORT)((ULONG)p_uc->gpUartRxAddress + UART_RECEIVE_BUF_SIZE - (ULONG)p_uc->gpUartRxReadAddress);
+        pEndObj->receive_len = (USHORT)((ULONG)p_uc->gpUartRxAddress + UART_RECV_BUF_SIZE - (ULONG)p_uc->gpUartRxReadAddress);
 
-    if(pEndObj->receive_len > (220))//if(pEndObj->receive_len > (UART_RECEIVE_BUF_SIZE/2))
+    if(pEndObj->receive_len > (220))//if(pEndObj->receive_len > (UART_RECV_BUF_SIZE/2))
     {
         pEndObj->recv_timeout = 0;
         return TRUE;
@@ -471,12 +467,12 @@ unsigned char End_IsIdle(P_END_OBJ pEndObj)
 
 }
 
-void USART_IRQProc(UART_CCB *uccb, USART_TypeDef *USARTx)
+void UART_IRQProc(UART_CCB *uccb, USART_TypeDef *UARTx)
 {
-  if(USART_GetITStatus(USARTx, USART_IT_RXNE) != RESET)
+  if(USART_GetITStatus(UARTx, USART_IT_RXNE) != RESET)
   {
     /* Read one byte from the receive data register */    
-    *(uccb->gpUartRxAddress) = USART_ReceiveData(USARTx);
+    *(uccb->gpUartRxAddress) = USART_ReceiveData(UARTx);
     uccb->gpUartRxAddress++;
 
     if(uccb->gpUartRxAddress == uccb->gpUartRxEndAddress)
@@ -495,18 +491,18 @@ void USART_IRQProc(UART_CCB *uccb, USART_TypeDef *USARTx)
 #endif
   }
 
-  if(USART_GetITStatus(USARTx, USART_IT_TXE) != RESET)
+  if(USART_GetITStatus(UARTx, USART_IT_TXE) != RESET)
   {   
     /* Write one byte to the transmit data register */
     if( uccb->gUartTxCnt > 0 )
     {
-        USART_SendData(USARTx, *(uccb->gpUartTxAddress));
+        USART_SendData(UARTx, *(uccb->gpUartTxAddress));
     	uccb->gpUartTxAddress++;   	
     	uccb->gUartTxCnt--;
 	}
     else
     {        
-        USART_ITConfig(USARTx, USART_IT_TXE, DISABLE);
+        USART_ITConfig(UARTx, USART_IT_TXE, DISABLE);
     }
 
 #if (LED_UART_EN > 0u)

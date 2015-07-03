@@ -950,10 +950,7 @@ void plc_checksum_test(void)
 INT16U cplc_read_energy(void)
 {
     P_MSG_INFO  pMsg = NULL;
-
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif     
+    OS_CPU_SR  cpu_sr;     
     
 
     if(!(pMsg = (P_MSG_INFO)alloc_send_buffer(MSG_SHORT)))
@@ -988,10 +985,7 @@ INT16U cplc_read_energy(void)
 INT16U mplc_reply_addr(void)
 {
     P_MSG_INFO  pMsg = NULL;
-    
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif      
+    OS_CPU_SR  cpu_sr;      
 
 
     if(!(pMsg = (P_MSG_INFO)alloc_send_buffer(MSG_SHORT)))
@@ -1015,10 +1009,7 @@ INT16U mplc_reply_addr(void)
 INT16U mplc_reply_energy(void)
 {
     P_MSG_INFO  pMsg = NULL;
-    
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif      
+    OS_CPU_SR  cpu_sr;      
 
 
     if(!(pMsg = (P_MSG_INFO)alloc_send_buffer(MSG_SHORT)))
@@ -1044,10 +1035,7 @@ INT16U cPLC_postProcess(pvoid h)
     P_MSG_INFO  pMsg = (P_MSG_INFO)h;
     INT8U  *pBuf = (UCHAR *)(pMsg->msg_buffer);
     INT16U  mLen = pMsg->msg_header.msg_len;
-    
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif    
+    OS_CPU_SR  cpu_sr;    
 
 
     OS_ENTER_CRITICAL();
@@ -1076,10 +1064,7 @@ INT16U mPLC_postProcess(pvoid h)
     P_MSG_INFO  pMsg = (P_MSG_INFO)h;
     INT8U  *pBuf = (UCHAR *)(pMsg->msg_buffer);
     INT16U  mLen = pMsg->msg_header.msg_len;
-    
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif    
+    OS_CPU_SR  cpu_sr;    
 
 
     OS_ENTER_CRITICAL();

@@ -125,10 +125,7 @@ INT16U LCD_postProcess(pvoid h)
     INT8U  *pBuf = (UCHAR *)(pMsg->msg_buffer);
     INT16U  mLen = pMsg->msg_header.msg_len;
     INT32U  temp;
-    
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif   
+    OS_CPU_SR  cpu_sr;   
 
 
     OS_ENTER_CRITICAL();

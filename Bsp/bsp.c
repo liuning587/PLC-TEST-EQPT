@@ -622,7 +622,7 @@ void BSP_Init(void)
     /* NVIC configuration ------------------------------------------------------*/
     NVIC_Configuration();   
 
-#if (IWDG_EN > 0u)
+#if (WDT_EN > 0u)
     IWDG_Init();
 #endif
 
@@ -639,7 +639,7 @@ void BSP_Init(void)
     GUI_X_Init();
 }
 
-void Variable_Init(void)
+void Mem_Init(void)
 {
 }
 

@@ -393,7 +393,7 @@ void LED_Config(void);
 void PLC_Config(void);
 void BEEP_Config(void);
 void stm32_soft_reset(void);
-void Variable_Init(void);
+void Mem_Init(void);
 
 /*
 *********************************************************************************************************

@@ -10,10 +10,7 @@ INT8U get_plc_prm(INT32U *pBuf)
     INT32U  *ptr = (INT32U *)PLC_PRM_ADDR;
     INT32U  temp;
     FLASH_Status  stat;
-    
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif 
+    OS_CPU_SR  cpu_sr; 
 
 
     for(i = 0; i < 0xff; i++)
@@ -62,10 +59,7 @@ INT8U give_plc_prm(INT32U *pBuf)
     INT32U  *ptr = (INT32U *)PLC_PRM_ADDR;
     INT32U  temp;
     FLASH_Status  stat;
-    
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif 
+    OS_CPU_SR  cpu_sr; 
 
 
     for(i = 0; i < 0xff; i++)

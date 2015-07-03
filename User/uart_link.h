@@ -127,7 +127,7 @@ unsigned char End_IsIdle(P_END_OBJ pEndObj);
 unsigned char End_postProcess(unsigned char end_type,  pvoid h);
 unsigned short End_tick_check(void);
 U32 UART_ReceiveData(U8 end_id, UCHAR* rxbuf, USHORT rxnum);
-void USART_IRQProc(UART_CCB *uccb, USART_TypeDef *USARTx);
+void UART_IRQProc(UART_CCB *uccb, USART_TypeDef *UARTx);
 
 
 #ifdef __cplusplus

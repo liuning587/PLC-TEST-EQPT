@@ -1,6 +1,6 @@
 /** 
  * @file     main.c
- * @brief    STM32F10x PLC模板
+ * @brief    载波测试工装
  * @details  
  * @author   华兄
  * @email    591881218@qq.com
@@ -58,7 +58,7 @@ int  main(void)
     BSP_Init();                                                 /* Initialize BSP functions                                 */
 
     App_MemAlloc();
-    Variable_Init();
+    Mem_Init();
     
     CPU_IntDis();                                               /* Disable all interrupts until we are ready to accept them */
 
@@ -124,7 +124,7 @@ static  void  App_TaskStart (void *p_arg)
         {
             LED_RUN_TOGGLE();
 
-#if (IWDG_EN > 0u)        
+#if (WDT_EN > 0u)        
             clr_wdt();
 #endif            
         }
@@ -258,10 +258,7 @@ static  void  App_TaskEndProc (void *p_arg)
 static  void  App_TaskPlc (void *p_arg)
 {
     INT8U  i, j, k, err;
-    
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif 
+    OS_CPU_SR  cpu_sr;
 
     
     (void)p_arg;  
@@ -316,7 +313,7 @@ static  void  App_TaskPlc (void *p_arg)
 
                 g_sta_level_flag = TRUE;
 
-                OSSemAccept(g_sem_plc);
+                while(OSSemAccept(g_sem_plc));
             
                 cplc_read_energy();
 
@@ -364,16 +361,13 @@ static  void  App_TaskDisp (void *p_arg)
     INT8U  i, err;
     bool  *ptr;
     INT16U  color;
-    
-#if OS_CRITICAL_METHOD == 3u
-    OS_CPU_SR  cpu_sr = 0u;
-#endif 
+    OS_CPU_SR  cpu_sr; 
 
     
     (void)p_arg;  
 
     while (DEF_TRUE) {     
-        OSSemAccept(g_sem_disp);
+        while(OSSemAccept(g_sem_disp));
         
         lcd_read_id();       
 
