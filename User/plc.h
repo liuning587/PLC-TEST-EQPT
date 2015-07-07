@@ -6,8 +6,6 @@
 #endif
 
 
-#define CFG_USE_DATA_BLOCK
-
 #define LED_PLC_TOGGLE()       LED_Toggle(LED_PLC)
 
 #define PLC_TEST_ONCE()        GPIO_ResetBits(GPIOA, GPIO_Pin_15)
@@ -31,7 +29,7 @@
 
 #define mPLC_NUM               4
 
-#define FREQ_NUM               2
+#define PLC_FREQ_NUM           2
 
 #define mPLC_RESET_NUM         1
 
@@ -40,8 +38,11 @@
 #define mPLC_NUM_3             2
 #define mPLC_NUM_4             3
 
-#define FREQ_270KHz            0
-#define FREQ_421KHz            1
+#define PLC_FREQ_270KHz        0
+#define PLC_FREQ_421KHz        1
+
+#define PLC_FREQ_270KHz_PREAMBLE    0xFC
+#define PLC_FREQ_421KHz_PREAMBLE    0xFA
 
 #define MAX_PLC_NUM            8
 
@@ -53,6 +54,32 @@
 #define PLC_NUM_6              0x36
 #define PLC_NUM_7              0x37
 #define PLC_NUM_8              0x38
+
+#define PLC_DEFAULT_PREAMBLE   0xFE
+
+#define PLC_BROAD_READ_ADDR    0x13
+#define PLC_BROAD_REPLY_ADDR   0X93
+
+#define PLC_READ_DATA          0x11
+#define PLC_REPLY_DATA         0x91
+
+#define PLC_DATA_BLOCK_ITEM    0x0001FF00
+
+#define PLC_FREQ_INDEX         0
+#define PLC_FREQ_LEN           1
+
+#define PLC_DL645_INDEX       (PLC_FREQ_INDEX + PLC_FREQ_LEN)
+
+#define PLC_NUM_INDEX          4
+#define mPLC_NUM_INDEX         5
+
+typedef enum
+{
+    RECV_RES_NONE = 0,
+    RECV_RES_SUCC,
+    RECV_RES_INVALID,
+    RECV_RES_TIMEOUT
+} RECV_RES;
 
 #define mPLC_SELECT(n) {                    \
     if(0 == n)                              \
@@ -123,11 +150,10 @@ extern INT8U g_cur_freq, g_cur_mplc;
 extern INT8U g_plc_num, g_tmp_plc_num;
 extern bool g_sta_level_flag;
 extern INT8U g_plc_index;
-extern bool g_mplc_state[mPLC_NUM][FREQ_NUM];
-extern bool g_sta_level[mPLC_NUM][FREQ_NUM];
+extern bool g_mplc_state[mPLC_NUM][PLC_FREQ_NUM];
+extern bool g_sta_level[mPLC_NUM][PLC_FREQ_NUM];
 
 void PLC_Init(void);
-void plc_checksum_test(void);
 INT16U cplc_read_energy(void);
 INT16U cPLC_postProcess(pvoid h);
 INT16U mPLC_postProcess(pvoid h);

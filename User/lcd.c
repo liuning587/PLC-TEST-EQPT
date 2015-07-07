@@ -66,7 +66,7 @@ const INT16U g_plc_num_edit_dp[MAX_PLC_NUM_EDIT_NUM] = {
 };
 
 const INT8U LCD_READ_ID[] = {0x5a, 0xa5, 0x03, 0x81, 0x00, 0x01};
-const INT8U LCD_PRM_UPLOAD[] = {0x5a, 0xa5, 0x06, 0x83, 0x05, 0x08};
+const INT8U LCD_PARA_UPLOAD[] = {0x5a, 0xa5, 0x06, 0x83, 0x05, 0x08};
 const INT8U LCD_OK_UPLOAD[] = {0x5a, 0xa5, 0x06, 0x83, 0x07, 0xff};
 
 OS_EVENT *g_sem_disp;
@@ -132,7 +132,7 @@ INT16U LCD_postProcess(pvoid h)
     g_msg_len = mLen;
     memcpy(g_msg_buf, pBuf, mLen);
 
-    if((LCD_AUTO_UPLOAD_LEN == mLen) && !(nstrcmp((char *)g_msg_buf, (char *)LCD_PRM_UPLOAD, sizeof(LCD_PRM_UPLOAD))))
+    if((LCD_AUTO_UPLOAD_LEN == mLen) && !(nstrcmp((char *)g_msg_buf, (char *)LCD_PARA_UPLOAD, sizeof(LCD_PARA_UPLOAD))))
     {
         g_tmp_plc_num = g_msg_buf[LCD_AUTO_UPLOAD_LEN - 1];
     }
@@ -145,9 +145,9 @@ INT16U LCD_postProcess(pvoid h)
             {
                 temp = g_tmp_plc_num;
 
-                if(TRUE == give_plc_prm(&temp))
+                if(TRUE == plc_write_para(&temp))
                 {
-                    if(TRUE == get_plc_prm(&temp))
+                    if(TRUE == plc_read_para(&temp))
                     {
                         temp &= 0xff;
 

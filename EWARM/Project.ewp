@@ -2000,6 +2000,9 @@
       <name>$PROJ_DIR$\..\User\common.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\User\DL645.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\User\key.c</name>
     </file>
     <file>

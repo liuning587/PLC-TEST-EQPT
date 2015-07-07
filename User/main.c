@@ -287,9 +287,9 @@ static  void  App_TaskPlc (void *p_arg)
     LED_mPLC_OFF();
 
     while (DEF_TRUE) {
-        FREQ_SELECT(FREQ_270KHz);
+        FREQ_SELECT(PLC_FREQ_270KHz);
 
-        for(i = 0; i < FREQ_NUM; i++)
+        for(i = 0; i < PLC_FREQ_NUM; i++)
         {
             g_cur_freq = i;
             
@@ -317,9 +317,9 @@ static  void  App_TaskPlc (void *p_arg)
             
                 cplc_read_energy();
 
-                if(FREQ_270KHz == i)
+                if(PLC_FREQ_270KHz == i)
                 {
-                    OSSemPend(g_sem_plc, 2500, &err);
+                    OSSemPend(g_sem_plc, 2750, &err);
                 }
                 else
                 {

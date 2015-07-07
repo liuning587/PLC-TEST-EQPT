@@ -21,6 +21,7 @@
 #include "common.h"
 #include "led.h"
 #include "key.h"
+#include "DL645.h"
 #include "queue.h"
 #include "link_manager.h"
 #include "uart_link.h"

@@ -4,10 +4,10 @@
 INT8U g_msg_buf[MAX_MSG_LEN];
 INT16U g_msg_len;
 
-INT8U get_plc_prm(INT32U *pBuf)
+INT8U plc_read_para(INT32U *pBuf)
 {
     INT8U  i;
-    INT32U  *ptr = (INT32U *)PLC_PRM_ADDR;
+    INT32U  *ptr = (INT32U *)PLC_PARA_ADDR;
     INT32U  temp;
     FLASH_Status  stat;
     OS_CPU_SR  cpu_sr; 
@@ -53,10 +53,10 @@ INT8U get_plc_prm(INT32U *pBuf)
     return (TRUE);
 }
 
-INT8U give_plc_prm(INT32U *pBuf)
+INT8U plc_write_para(INT32U *pBuf)
 {
     INT8U  i;
-    INT32U  *ptr = (INT32U *)PLC_PRM_ADDR;
+    INT32U  *ptr = (INT32U *)PLC_PARA_ADDR;
     INT32U  temp;
     FLASH_Status  stat;
     OS_CPU_SR  cpu_sr; 
@@ -69,7 +69,7 @@ INT8U give_plc_prm(INT32U *pBuf)
             FLASH_Unlock();
 
             OS_ENTER_CRITICAL();
-            stat = FLASH_ErasePage(PLC_PRM_ADDR);
+            stat = FLASH_ErasePage(PLC_PARA_ADDR);
             OS_EXIT_CRITICAL();
 
             if(FLASH_COMPLETE != stat)
@@ -82,7 +82,7 @@ INT8U give_plc_prm(INT32U *pBuf)
             temp = *pBuf;
 
             OS_ENTER_CRITICAL();
-            stat = FLASH_ProgramWord((uint32_t)PLC_PRM_ADDR, temp);  
+            stat = FLASH_ProgramWord((uint32_t)PLC_PARA_ADDR, temp);  
             OS_EXIT_CRITICAL();
 
             if(FLASH_COMPLETE != stat)

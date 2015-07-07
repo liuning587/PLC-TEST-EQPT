@@ -354,6 +354,8 @@ CPU_BOOLEAN  BSP_PB_GetStatus            (CPU_INT08U     pb);
 *********************************************************************************************************
 */
 
+#define DEBUG_INFO_PRINT_EN          0u
+
 #if (DEBUG_INFO_PRINT_EN > 0u)
 #define DEBUG_PRINT(s)         printf s
 #else
@@ -364,7 +366,7 @@ CPU_BOOLEAN  BSP_PB_GetStatus            (CPU_INT08U     pb);
  #define CFG_USE_STM32F103X
 #endif
 
-#define IWDG_EN                      1u
+#define WDT_EN                       1u
 
 #define SYS_TICK_PRIO                 8
 
