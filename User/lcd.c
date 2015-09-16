@@ -95,7 +95,7 @@ INT16U lcd_read_id(void)
 
     pMsg->msg_header.need_buffer_free = TRUE;
     
-    return End_send(pMsg);
+    return (End_send(pMsg));
 }
 
 INT16U lcd_disp(INT8U *buf, INT8U len)
@@ -116,7 +116,7 @@ INT16U lcd_disp(INT8U *buf, INT8U len)
 
     pMsg->msg_header.need_buffer_free = TRUE;
     
-    return End_send(pMsg);
+    return (End_send(pMsg));
 }
 
 INT16U LCD_postProcess(pvoid h)
@@ -125,7 +125,7 @@ INT16U LCD_postProcess(pvoid h)
     INT8U  *pBuf = (UCHAR *)(pMsg->msg_buffer);
     INT16U  mLen = pMsg->msg_header.msg_len;
     INT32U  temp;
-    OS_CPU_SR  cpu_sr;   
+    OS_CPU_SR_ALLOC();   
 
 
     OS_ENTER_CRITICAL();
@@ -170,7 +170,7 @@ INT16U LCD_postProcess(pvoid h)
                     g_plc_num = g_tmp_plc_num;
                 }
 
-                stm32_soft_reset();
+                STM32_SoftReset();
             }
         }
     }    

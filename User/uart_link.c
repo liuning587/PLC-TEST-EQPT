@@ -59,7 +59,7 @@ U8 *pUartRxBuf[] = {
 
 U32 UART_ReceiveData(U8 end_id, UCHAR* rxbuf, USHORT rxnum)
 {
-    OS_CPU_SR  cpu_sr;
+    OS_CPU_SR_ALLOC();
     P_UART_CCB p_uc = &g_uart_ccb[end_id];
 
     if( (rxnum < 1) || (end_id >= MAX_COM_PORT) )
@@ -118,7 +118,7 @@ Tick任务调用，检查每个END接口是否有新的frame收完
 ************************************************************/
 unsigned short End_tick_check(void)
 {
-    OS_CPU_SR  cpu_sr;
+    OS_CPU_SR_ALLOC();
     unsigned char i;
     U16 cp_len, msg_len;
 

@@ -30,8 +30,8 @@ static  void           App_TaskPlc                  (void *p_arg);
 static  void           App_TaskDisp                 (void *p_arg);
 
 static  void           App_MemAlloc                 (void);
-static  void           App_TaskCreate               (void);
 static  void           App_EventCreate              (void);
+static  void           App_TaskCreate               (void);
 
 
 /*
@@ -55,13 +55,10 @@ int  main(void)
     INT8U  err;
     
     
-    BSP_Init();                                                 /* Initialize BSP functions                                 */
-
-    App_MemAlloc();
-    Mem_Init();
-    
     CPU_IntDis();                                               /* Disable all interrupts until we are ready to accept them */
 
+    App_MemAlloc();
+    
     OSInit();                                                   /* Initialize "uC/OS-II, The Real-Time Kernel"              */
 
     OSTaskCreateExt((void (*)(void *)) App_TaskStart,           /* Create the start task                                    */
@@ -103,30 +100,28 @@ static  void  App_TaskStart (void *p_arg)
     
     (void)p_arg;                                                /* See Note #1                                              */
 
+    BSP_Init();                                                 /* Initialize BSP functions                                 */
+    
     OS_CPU_SysTickInit();                                       /* Initialize the SysTick.                                  */
-
-    CPU_IntEn();                                                /* Enable all interrupts until we are ready to accept them  */
 
 #if (OS_TASK_STAT_EN > 0)
     OSStatInit();                                               /* Determine CPU capacity                                   */
 #endif   
 
+    MEM_Init();
+
     End_Init();
 
-    App_TaskCreate();                                           /* Create application tasks                                 */
+    App_EventCreate();                                          /* Create application events                                */
 
-    App_EventCreate();
+    App_TaskCreate();                                           /* Create application tasks                                 */
         
     while (DEF_TRUE) {
         beep();
 
         if(!(count % LED_RUN_TOGGLE_PERIOD))
         {
-            LED_RUN_TOGGLE();
-
-#if (WDT_EN > 0u)        
-            clr_wdt();
-#endif            
+            LED_RUN_TOGGLE();      
         }
 
         count++;
@@ -143,11 +138,11 @@ static  void  App_TaskStart (void *p_arg)
 *
 * Argument(s) : p_arg   is the argument passed to 'App_TaskKey()' by 'OSTaskCreateExt()'.
 *
-* Return(s)  : none.
+* Return(s)   : none.
 *
-* Caller(s)  : This is a task.
+* Caller(s)   : This is a task.
 *
-* Note(s)    : none.
+* Note(s)     : none.
 *********************************************************************************************************
 */
 static  void  App_TaskKey (void *p_arg)
@@ -172,11 +167,11 @@ static  void  App_TaskKey (void *p_arg)
 *
 * Argument(s) : p_arg   is the argument passed to 'App_TaskEndTick()' by 'OSTaskCreateExt()'.
 *
-* Return(s)  : none.
+* Return(s)   : none.
 *
-* Caller(s)  : This is a task.
+* Caller(s)   : This is a task.
 *
-* Note(s)    : none.
+* Note(s)     : none.
 *********************************************************************************************************
 */
 static  void  App_TaskEndTick (void *p_arg)
@@ -202,11 +197,11 @@ static  void  App_TaskEndTick (void *p_arg)
 *
 * Argument(s) : p_arg   is the argument passed to 'App_TaskEndProc()' by 'OSTaskCreateExt()'.
 *
-* Return(s)  : none.
+* Return(s)   : none.
 *
-* Caller(s)  : This is a task.
+* Caller(s)   : This is a task.
 *
-* Note(s)    : none.
+* Note(s)     : none.
 *********************************************************************************************************
 */
 static  void  App_TaskEndProc (void *p_arg)
@@ -248,17 +243,17 @@ static  void  App_TaskEndProc (void *p_arg)
 *
 * Argument(s) : p_arg   is the argument passed to 'App_TaskPlc()' by 'OSTaskCreateExt()'.
 *
-* Return(s)  : none.
+* Return(s)   : none.
 *
-* Caller(s)  : This is a task.
+* Caller(s)   : This is a task.
 *
-* Note(s)    : none.
+* Note(s)     : none.
 *********************************************************************************************************
 */
 static  void  App_TaskPlc (void *p_arg)
 {
-    INT8U  i, j, k, err;
-    OS_CPU_SR  cpu_sr;
+    INT8U  i, j, err;
+    OS_CPU_SR_ALLOC();
 
     
     (void)p_arg;  
@@ -270,13 +265,24 @@ static  void  App_TaskPlc (void *p_arg)
         mPLC_SELECT(i);
         g_cur_mplc = i;   
         
-        for(k = 0; k < mPLC_RESET_NUM; k++)
+        for(j = 0; j < mPLC_RESET_NUM; j++)
         {
             mPLC_RESET_LOW();
             OSTimeDlyHMSM(0, 0, 0, 300);
             mPLC_RESET_HIGH();
             
-            OSTimeDlyHMSM(0, 0, 0, 500);
+            while(OSSemAccept(g_sem_plc));
+            
+            OSSemPend(g_sem_plc, OS_TICKS_PER_SEC, &err);
+            
+            if(OS_ERR_NONE == err)
+            {
+                OSTimeDlyHMSM(0, 0, 0, 100);
+            }
+            else
+            {
+                
+            }          
         }
     }
 
@@ -298,15 +304,6 @@ static  void  App_TaskPlc (void *p_arg)
                 mPLC_SELECT(j);
                 g_cur_mplc = j;   
 
-                for(k = 0; k < mPLC_RESET_NUM; k++)
-                {
-                    mPLC_RESET_LOW();
-                    OSTimeDlyHMSM(0, 0, 0, 100);
-                    mPLC_RESET_HIGH();
-                    
-                    OSTimeDlyHMSM(0, 0, 0, 150);
-                }
-              
                 OS_ENTER_CRITICAL();
                 g_sta_level[g_cur_mplc][g_cur_freq] = FALSE;
                 OS_EXIT_CRITICAL();
@@ -334,6 +331,8 @@ static  void  App_TaskPlc (void *p_arg)
                 }   
 
                 g_sta_level_flag = FALSE;
+                
+                OSTimeDlyHMSM(0, 0, 0, 100);
             }
         }
 
@@ -349,11 +348,11 @@ static  void  App_TaskPlc (void *p_arg)
 *
 * Argument(s) : p_arg   is the argument passed to 'App_TaskDisp()' by 'OSTaskCreateExt()'.
 *
-* Return(s)  : none.
+* Return(s)   : none.
 *
-* Caller(s)  : This is a task.
+* Caller(s)   : This is a task.
 *
-* Note(s)    : none.
+* Note(s)     : none.
 *********************************************************************************************************
 */
 static  void  App_TaskDisp (void *p_arg)
@@ -361,7 +360,7 @@ static  void  App_TaskDisp (void *p_arg)
     INT8U  i, err;
     bool  *ptr;
     INT16U  color;
-    OS_CPU_SR  cpu_sr; 
+    OS_CPU_SR_ALLOC(); 
 
     
     (void)p_arg;  
@@ -559,9 +558,47 @@ static  void  App_TaskDisp (void *p_arg)
     }
 }
 
+/*
+*********************************************************************************************************
+*                                      App_MemAlloc
+*
+* Description :  Allocs the application memories.
+*
+* Argument(s) :  none.
+*
+* Return(s)   :  none.
+*
+* Caller(s)   :  Main().
+*
+* Note(s)     :  none.
+*********************************************************************************************************
+*/
 static void App_MemAlloc(void)
 {
 
+}
+
+/*
+*********************************************************************************************************
+*                                      App_EventCreate
+*
+* Description :  Creates the application events.
+*
+* Argument(s) :  none.
+*
+* Return(s)   :  none.
+*
+* Caller(s)   :  App_TaskStart().
+*
+* Note(s)     :  none.
+*********************************************************************************************************
+*/
+static  void  App_EventCreate (void)
+{
+    g_sem_end = OSSemCreate(0);
+    g_sem_disp = OSSemCreate(0);
+    g_sem_plc = OSSemCreate(0);    
+    g_sem_key = OSSemCreate(0);
 }
 
 /*
@@ -643,13 +680,5 @@ static  void  App_TaskCreate (void)
                     (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 
     OSTaskNameSet(APP_CFG_TASK_DISP_PRIO, "Display", &err);    
-}
-
-static  void  App_EventCreate (void)
-{
-    g_sem_end = OSSemCreate(0);
-    g_sem_disp = OSSemCreate(0);
-    g_sem_plc = OSSemCreate(0);    
-    g_sem_key = OSSemCreate(0);
 }
 

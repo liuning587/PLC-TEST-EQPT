@@ -64,7 +64,7 @@ void  GUI_X_KeyProc (int k)
     switch(key_msg)
     {
     case KEY_MSG_RESET:
-        stm32_soft_reset();
+        STM32_SoftReset();
         break;
 
     default:

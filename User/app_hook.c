@@ -62,6 +62,7 @@ void  App_TaskDelHook (OS_TCB *ptcb)
 #if OS_VERSION >= 251
 void  App_TaskIdleHook (void)
 {
+    clr_wdt();
 }
 #endif
 

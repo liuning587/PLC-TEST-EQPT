@@ -75,8 +75,17 @@ typedef unsigned int   OS_CPU_SR;                /* Define size of CPU status re
 #define  OS_CRITICAL_METHOD   3
 
 #if OS_CRITICAL_METHOD == 3
-#define  OS_ENTER_CRITICAL()  {cpu_sr = OS_CPU_SR_Save();}
-#define  OS_EXIT_CRITICAL()   {OS_CPU_SR_Restore(cpu_sr);}
+#define  OS_CPU_SR_ALLOC()      OS_CPU_SR  cpu_sr = (OS_CPU_SR)0
+#else
+#define  OS_CPU_SR_ALLOC()
+#endif
+
+#if OS_CRITICAL_METHOD == 3
+#define  OS_ENTER_CRITICAL()  { cpu_sr = OS_CPU_SR_Save(); }
+#define  OS_EXIT_CRITICAL()   { OS_CPU_SR_Restore(cpu_sr); }
+#else
+#define  OS_ENTER_CRITICAL() 
+#define  OS_EXIT_CRITICAL() 
 #endif
 
 /*

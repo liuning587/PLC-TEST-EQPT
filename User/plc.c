@@ -43,9 +43,9 @@ bool g_sta_level[mPLC_NUM][PLC_FREQ_NUM] = {
 	{FALSE, FALSE}		
 }; 
 
-DL645_Frame_C plc_frame_send;
-DL645_Frame_C plc_frame_recv;
-DL645_Frame_Stat_C plc_frame_stat;
+DL645_FRAME plc_frame_send;
+DL645_FRAME plc_frame_recv;
+DL645_FRAME_STAT plc_frame_stat;
 
 INT8U plc_send_buf[256];
 INT16U plc_send_len;
@@ -106,9 +106,7 @@ void cplc_read_energy_proc(void)
     memcpy(plc_frame_send.Data, &plc_data_item, DL645_07_DATA_ITEM_LEN);
     data_len = DL645_07_DATA_ITEM_LEN;
 
-    Create_DL645_Frame(dev_addr, ctrl_code, data_len, &plc_frame_send);
-
-    plc_send_len = data_len + DL645_FIX_LEN;
+    plc_send_len = Create_DL645_Frame(dev_addr, ctrl_code, data_len, &plc_frame_send);
     
     memcpy(&plc_send_buf[PLC_DL645_INDEX], &plc_frame_send, plc_send_len);
                         
@@ -119,7 +117,7 @@ void cplc_read_energy_proc(void)
 INT16U cplc_read_energy(void)
 {
     P_MSG_INFO  pMsg = NULL;
-    OS_CPU_SR  cpu_sr;     
+    OS_CPU_SR_ALLOC();     
     
 
     if(!(pMsg = (P_MSG_INFO)alloc_send_buffer(MSG_SHORT)))
@@ -129,8 +127,6 @@ INT16U cplc_read_energy(void)
 
     OS_ENTER_CRITICAL();
     cplc_read_energy_proc();
-    memcpy(pMsg->msg_buffer, plc_send_buf, plc_send_len);
-    pMsg->msg_header.msg_len = plc_send_len;
 
     if(PLC_FREQ_270KHz == g_cur_freq)
     {
@@ -168,9 +164,7 @@ void mplc_assign_addr_proc(void)
     memcpy(&plc_frame_send.Data, dev_addr, sizeof(dev_addr));
     data_len = sizeof(dev_addr);
 
-    Create_DL645_Frame(dev_addr, ctrl_code, data_len, &plc_frame_send);
-
-    plc_send_len = data_len + DL645_FIX_LEN;
+    plc_send_len = Create_DL645_Frame(dev_addr, ctrl_code, data_len, &plc_frame_send);
     
     memcpy(&plc_send_buf[PLC_DL645_INDEX], &plc_frame_send, plc_send_len);
                         
@@ -181,7 +175,7 @@ void mplc_assign_addr_proc(void)
 INT16U mplc_assign_addr(void)
 {
     P_MSG_INFO  pMsg = NULL;
-    OS_CPU_SR  cpu_sr;      
+    OS_CPU_SR_ALLOC();      
 
 
     if(!(pMsg = (P_MSG_INFO)alloc_send_buffer(MSG_SHORT)))
@@ -220,9 +214,7 @@ void mplc_reply_energy_proc(void)
     memcpy(&plc_frame_send.Data[DL645_07_DATA_ITEM_LEN], mPLC_ENERGY, sizeof(mPLC_ENERGY));
     data_len = DL645_07_DATA_ITEM_LEN + sizeof(mPLC_ENERGY);
 
-    Create_DL645_Frame(dev_addr, ctrl_code, data_len, &plc_frame_send);
-
-    plc_send_len = data_len + DL645_FIX_LEN;
+    plc_send_len = Create_DL645_Frame(dev_addr, ctrl_code, data_len, &plc_frame_send);
 
     memcpy(plc_send_buf, &plc_frame_send, plc_send_len);
 }
@@ -230,7 +222,7 @@ void mplc_reply_energy_proc(void)
 INT16U mplc_reply_energy(void)
 {
     P_MSG_INFO  pMsg = NULL;
-    OS_CPU_SR  cpu_sr;      
+    OS_CPU_SR_ALLOC();      
 
 
     if(!(pMsg = (P_MSG_INFO)alloc_send_buffer(MSG_SHORT)))
@@ -260,18 +252,11 @@ INT8U proto_check_frame(void)
                                                  (INT8U *)&plc_frame_recv,
                                                   &plc_frame_stat))
     {
-         result = RECV_RES_INVALID;                                                 
+        result = RECV_RES_INVALID;                                                 
     }
     else
     {                
-        if((0 == plc_frame_stat.Status) || (0 == plc_frame_stat.C))
-        {
-            result = RECV_RES_INVALID;                            
-        }
-        else
-        {
-            result = RECV_RES_SUCC;
-        }
+        result = RECV_RES_SUCC;
     }
     
     return (result);
@@ -286,7 +271,7 @@ void cplc_recv_msg_proc(INT8U *pBuf, INT16U mLen)
 
     if(RECV_RES_SUCC == proto_check_frame())
     { 
-        switch(plc_frame_stat.C)
+        switch(plc_frame_stat.Ctrl)
         {
         case PLC_REPLY_DATA:
             plc_data_item = ((INT32U)plc_frame_recv.Data[3] << 24) | ((INT32U)plc_frame_recv.Data[2] << 16) | ((INT32U)plc_frame_recv.Data[1] << 8) | ((INT32U)plc_frame_recv.Data[0] << 0);
@@ -315,7 +300,7 @@ INT16U cPLC_postProcess(pvoid h)
     P_MSG_INFO  pMsg = (P_MSG_INFO)h;
     INT8U  *pBuf = (UCHAR *)(pMsg->msg_buffer);
     INT16U  mLen = pMsg->msg_header.msg_len, index;
-    OS_CPU_SR  cpu_sr;    
+    OS_CPU_SR_ALLOC();    
 
 
     OS_ENTER_CRITICAL();
@@ -340,10 +325,12 @@ void mplc_recv_msg_proc(INT8U *pBuf, INT16U mLen)
 
     if(RECV_RES_SUCC == proto_check_frame())
     { 
-        switch(plc_frame_stat.C)
+        switch(plc_frame_stat.Ctrl)
         {
         case PLC_BROAD_READ_ADDR:
             mplc_assign_addr();
+            
+            OSSemPost(g_sem_plc);
             break;
 
         case PLC_READ_DATA:
@@ -366,7 +353,7 @@ INT16U mPLC_postProcess(pvoid h)
     P_MSG_INFO  pMsg = (P_MSG_INFO)h;
     INT8U  *pBuf = (UCHAR *)(pMsg->msg_buffer);
     INT16U  mLen = pMsg->msg_header.msg_len, index;
-    OS_CPU_SR  cpu_sr;    
+    OS_CPU_SR_ALLOC();    
 
 
     OS_ENTER_CRITICAL();

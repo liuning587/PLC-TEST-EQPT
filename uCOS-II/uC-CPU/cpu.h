@@ -242,9 +242,19 @@ typedef  CPU_INT32U  CPU_SR;                                    /* Defines   CPU
                                                                 /* Configure CPU critical method      (see Note #1) :   */
 #define  CPU_CFG_CRITICAL_METHOD        CPU_CRITICAL_METHOD_STATUS_LOCAL
 
+#if     (CPU_CFG_CRITICAL_METHOD == CPU_CRITICAL_METHOD_STATUS_LOCAL)
+#define  CPU_SR_ALLOC()                   CPU_SR  cpu_sr = (CPU_SR)0
+#else
+#define  CPU_SR_ALLOC()
+#endif
+
+#if     (CPU_CFG_CRITICAL_METHOD == CPU_CRITICAL_METHOD_STATUS_LOCAL)
 #define  CPU_CRITICAL_ENTER()           { cpu_sr = CPU_SR_Save(); }
 #define  CPU_CRITICAL_EXIT()            { CPU_SR_Restore(cpu_sr); }
-
+#else
+#define  CPU_CRITICAL_ENTER() 
+#define  CPU_CRITICAL_EXIT() 
+#endif
 
 /*
 *********************************************************************************************************

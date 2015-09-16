@@ -368,6 +368,12 @@ CPU_BOOLEAN  BSP_PB_GetStatus            (CPU_INT08U     pb);
 
 #define WDT_EN                       1u
 
+#if (WDT_EN > 0u)
+#define clr_wdt()         { IWDG_ReloadCounter(); }
+#else
+#define clr_wdt() 
+#endif
+
 #define SYS_TICK_PRIO                 8
 
 #define USART1_PREEM_PRIO             1
@@ -389,13 +395,11 @@ CPU_BOOLEAN  BSP_PB_GetStatus            (CPU_INT08U     pb);
 
 #define LED_RUN_TOGGLE()     LED_Toggle(LED_RUN)
 
-#define clr_wdt()            IWDG_ReloadCounter()
-
 void LED_Config(void);
 void PLC_Config(void);
 void BEEP_Config(void);
-void stm32_soft_reset(void);
-void Mem_Init(void);
+void STM32_SoftReset(void);
+void MEM_Init(void);
 
 /*
 *********************************************************************************************************

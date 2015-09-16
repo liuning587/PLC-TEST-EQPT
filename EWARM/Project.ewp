@@ -295,9 +295,9 @@
         <option>
           <name>CCIncludePath2</name>
           <state>$PROJ_DIR$\..\Bsp</state>
-          <state>$PROJ_DIR$\..\Libraries\CMSIS\CoreSupport</state>
-          <state>$PROJ_DIR$\..\Libraries\CMSIS\DeviceSupport</state>
-          <state>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\inc</state>
+          <state>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\CMSIS\CoreSupport</state>
+          <state>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\CMSIS\DeviceSupport</state>
+          <state>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\inc</state>
           <state>$PROJ_DIR$\..\User</state>
           <state>$PROJ_DIR$\..\uCOS-II\Ports</state>
           <state>$PROJ_DIR$\..\uCOS-II\Source</state>
@@ -569,7 +569,7 @@
         <option>
           <name>OOCOutputFormat</name>
           <version>2</version>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>OCOutputOverride</name>
@@ -577,7 +577,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state></state>
+          <state>Project.hex</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -585,7 +585,7 @@
         </option>
         <option>
           <name>OOCObjCopyEnable</name>
-          <state>0</state>
+          <state>1</state>
         </option>
       </data>
     </settings>
@@ -1825,6 +1825,138 @@
   </configuration>
   <group>
     <name>Bsp</name>
+    <group>
+      <name>StdPeriph_Lib</name>
+      <group>
+        <name>CMSIS</name>
+        <group>
+          <name>Startup</name>
+          <file>
+            <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\CMSIS\DeviceSupport\startup\startup_stm32f10x_cl.s</name>
+            <excluded>
+              <configuration>Debug</configuration>
+            </excluded>
+          </file>
+          <file>
+            <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\CMSIS\DeviceSupport\startup\startup_stm32f10x_hd.s</name>
+            <excluded>
+              <configuration>Debug</configuration>
+            </excluded>
+          </file>
+          <file>
+            <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\CMSIS\DeviceSupport\startup\startup_stm32f10x_hd_vl.s</name>
+            <excluded>
+              <configuration>Debug</configuration>
+            </excluded>
+          </file>
+          <file>
+            <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\CMSIS\DeviceSupport\startup\startup_stm32f10x_ld.s</name>
+            <excluded>
+              <configuration>Debug</configuration>
+            </excluded>
+          </file>
+          <file>
+            <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\CMSIS\DeviceSupport\startup\startup_stm32f10x_ld_vl.s</name>
+            <excluded>
+              <configuration>Debug</configuration>
+            </excluded>
+          </file>
+          <file>
+            <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\CMSIS\DeviceSupport\startup\startup_stm32f10x_md.s</name>
+          </file>
+          <file>
+            <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\CMSIS\DeviceSupport\startup\startup_stm32f10x_md_vl.s</name>
+            <excluded>
+              <configuration>Debug</configuration>
+            </excluded>
+          </file>
+          <file>
+            <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\CMSIS\DeviceSupport\startup\startup_stm32f10x_xl.s</name>
+            <excluded>
+              <configuration>Debug</configuration>
+            </excluded>
+          </file>
+        </group>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\CMSIS\CoreSupport\core_cm3.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\CMSIS\DeviceSupport\system_stm32f10x.c</name>
+        </file>
+      </group>
+      <group>
+        <name>StdPeriph_Driver</name>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\misc.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_adc.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_bkp.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_can.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_cec.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_crc.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_dac.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_dbgmcu.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_dma.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_exti.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_flash.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_fsmc.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_gpio.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_i2c.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_iwdg.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_pwr.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_rcc.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_rtc.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_sdio.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_spi.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_tim.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_usart.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Bsp\StdPeriph_Lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_wwdg.c</name>
+        </file>
+      </group>
+    </group>
     <file>
       <name>$PROJ_DIR$\..\Bsp\beep.c</name>
     </file>
@@ -1833,135 +1965,6 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\Bsp\led.c</name>
-    </file>
-  </group>
-  <group>
-    <name>CMSIS</name>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\CMSIS\CoreSupport\core_cm3.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\CMSIS\DeviceSupport\system_stm32f10x.c</name>
-    </file>
-  </group>
-  <group>
-    <name>Startup</name>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\CMSIS\DeviceSupport\startup\startup_stm32f10x_cl.s</name>
-      <excluded>
-        <configuration>Debug</configuration>
-      </excluded>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\CMSIS\DeviceSupport\startup\startup_stm32f10x_hd.s</name>
-      <excluded>
-        <configuration>Debug</configuration>
-      </excluded>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\CMSIS\DeviceSupport\startup\startup_stm32f10x_hd_vl.s</name>
-      <excluded>
-        <configuration>Debug</configuration>
-      </excluded>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\CMSIS\DeviceSupport\startup\startup_stm32f10x_ld.s</name>
-      <excluded>
-        <configuration>Debug</configuration>
-      </excluded>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\CMSIS\DeviceSupport\startup\startup_stm32f10x_ld_vl.s</name>
-      <excluded>
-        <configuration>Debug</configuration>
-      </excluded>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\CMSIS\DeviceSupport\startup\startup_stm32f10x_md.s</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\CMSIS\DeviceSupport\startup\startup_stm32f10x_md_vl.s</name>
-      <excluded>
-        <configuration>Debug</configuration>
-      </excluded>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\CMSIS\DeviceSupport\startup\startup_stm32f10x_xl.s</name>
-      <excluded>
-        <configuration>Debug</configuration>
-      </excluded>
-    </file>
-  </group>
-  <group>
-    <name>StdPeriph_Driver</name>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\misc.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_adc.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_bkp.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_can.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_cec.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_crc.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_dac.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_dbgmcu.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_dma.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_exti.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_flash.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_fsmc.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_gpio.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_i2c.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_iwdg.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_pwr.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_rcc.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_rtc.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_sdio.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_spi.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_tim.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_usart.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_wwdg.c</name>
     </file>
   </group>
   <group>
@@ -1988,6 +1991,18 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\uCOS-II\uC-CPU\cpu_c.c</name>
+      </file>
+    </group>
+    <group>
+      <name>uC-LIB</name>
+      <file>
+        <name>$PROJ_DIR$\..\uCOS-II\uC-LIB\lib_ascii.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\uCOS-II\uC-LIB\lib_mem.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\uCOS-II\uC-LIB\lib_str.c</name>
       </file>
     </group>
   </group>

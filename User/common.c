@@ -10,7 +10,7 @@ INT8U plc_read_para(INT32U *pBuf)
     INT32U  *ptr = (INT32U *)PLC_PARA_ADDR;
     INT32U  temp;
     FLASH_Status  stat;
-    OS_CPU_SR  cpu_sr; 
+    OS_CPU_SR_ALLOC(); 
 
 
     for(i = 0; i < 0xff; i++)
@@ -59,7 +59,7 @@ INT8U plc_write_para(INT32U *pBuf)
     INT32U  *ptr = (INT32U *)PLC_PARA_ADDR;
     INT32U  temp;
     FLASH_Status  stat;
-    OS_CPU_SR  cpu_sr; 
+    OS_CPU_SR_ALLOC(); 
 
 
     for(i = 0; i < 0xff; i++)

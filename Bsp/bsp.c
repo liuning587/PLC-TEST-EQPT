@@ -547,7 +547,7 @@ void USART3_Init(void)
     USART_Cmd(USART3, ENABLE);             
 }
 
-void stm32_soft_reset(void)
+void STM32_SoftReset(void)
 {
     __set_FAULTMASK(SET);
     
@@ -608,6 +608,7 @@ INT32U  OS_CPU_SysTickClkFreq (void)
 
 
     freq = BSP_CPU_ClkFreq();
+    
     return (freq);
 }
 
@@ -639,7 +640,7 @@ void BSP_Init(void)
     GUI_X_Init();
 }
 
-void Mem_Init(void)
+void MEM_Init(void)
 {
 }
 
