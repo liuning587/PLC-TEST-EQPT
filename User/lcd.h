@@ -6,9 +6,6 @@
 #endif
 
 
-#define LED_DISP_ON()             LED_On(LED_DISP)
-#define LED_DISP_OFF()            LED_Off(LED_DISP)
-
 #define LCD_DISP_TIME            (20) //ms
 
 #define LCD_COLOR_WHITE           0xffff
@@ -19,7 +16,7 @@
 #define MAX_mPLC_STATE_EDIT_NUM   8
 #define MAX_ERR_EDIT_NUM          8
 #define MAX_OS_INFO_EDIT_NUM      2
-#define MAX_PLC_NUM_EDIT_NUM      2
+#define MAX_PLC_GROUP_EDIT_NUM      2
 
 
 #define mPLC_STATE_EDIT1_ADDR     0x0000 //变量地址，汉字，21
@@ -79,11 +76,11 @@
 #define ERR_EDIT8_DP              0x04e0 //描述指针
 
 
-#define PLC_NUM_EDIT1_ADDR        0x0500 //变量地址，汉字，21
-#define PLC_NUM_EDIT1_DP          0x0600 //描述指针        
+#define PLC_GROUP_EDIT1_ADDR      0x0500 //变量地址，汉字，21
+#define PLC_GROUP_EDIT1_DP        0x0600 //描述指针        
 
-#define PLC_NUM_EDIT2_ADDR        0x0508 //变量地址，ASCII，10
-#define PLC_NUM_EDIT2_DP          0x0620 //描述指针  
+#define PLC_GROUP_EDIT2_ADDR      0x0508 //变量地址，ASCII，10
+#define PLC_GROUP_EDIT2_DP        0x0620 //描述指针  
 
 
 #define EDIT_ADDR_HIGH_INDEX      4
@@ -100,8 +97,8 @@ extern const INT16U g_err_edit_addr[MAX_ERR_EDIT_NUM];
 extern const INT16U g_err_edit_dp[MAX_ERR_EDIT_NUM];
 extern const INT16U g_os_info_edit_addr[MAX_OS_INFO_EDIT_NUM];
 extern const INT16U g_os_info_edit_dp[MAX_OS_INFO_EDIT_NUM];
-extern const INT16U g_plc_num_edit_addr[MAX_PLC_NUM_EDIT_NUM];
-extern const INT16U g_plc_num_edit_dp[MAX_PLC_NUM_EDIT_NUM];
+extern const INT16U g_plc_group_edit_addr[MAX_PLC_GROUP_EDIT_NUM];
+extern const INT16U g_plc_group_edit_dp[MAX_PLC_GROUP_EDIT_NUM];
 extern OS_EVENT *g_sem_disp;
 extern const INT8U g_color_code[8];
 extern const INT8U g_font_code[10];

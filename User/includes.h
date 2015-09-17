@@ -25,6 +25,7 @@
 #include "queue.h"
 #include "link_manager.h"
 #include "uart_link.h"
+#include "memory.h"
 #include "lcd.h"
 #include "plc.h"
 #include "beep.h"

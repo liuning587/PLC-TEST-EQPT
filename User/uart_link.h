@@ -6,10 +6,6 @@
 #endif
 
 
-#define LED_UART_EN                1
-#define LED_UART_ON()      LED_On(LED_UART)
-#define LED_UART_OFF()     LED_Off(LED_UART)
-
 #define LCD_COM_PORT               0
 #define cPLC_COM_PORT              1
 #define mPLC_COM_PORT              2

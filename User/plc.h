@@ -6,8 +6,6 @@
 #endif
 
 
-#define LED_PLC_TOGGLE()       LED_Toggle(LED_PLC)
-
 #define PLC_TEST_ONCE()        GPIO_ResetBits(GPIOA, GPIO_Pin_15)
 #define PLC_TEST_RESET()       GPIO_SetBits(GPIOA, GPIO_Pin_15)
 
@@ -33,10 +31,10 @@
 
 #define mPLC_RESET_NUM         1
 
-#define mPLC_NUM_1             0
-#define mPLC_NUM_2             1
-#define mPLC_NUM_3             2
-#define mPLC_NUM_4             3
+#define mPLC_1                 0
+#define mPLC_2                 1
+#define mPLC_3                 2
+#define mPLC_4                 3
 
 #define PLC_FREQ_270KHz        0
 #define PLC_FREQ_421KHz        1
@@ -44,16 +42,16 @@
 #define PLC_FREQ_270KHz_PREAMBLE    0xFC
 #define PLC_FREQ_421KHz_PREAMBLE    0xFA
 
-#define MAX_PLC_NUM            8
-
-#define PLC_NUM_1              0x31
-#define PLC_NUM_2              0x32
-#define PLC_NUM_3              0x33
-#define PLC_NUM_4              0x34
-#define PLC_NUM_5              0x35
-#define PLC_NUM_6              0x36
-#define PLC_NUM_7              0x37
-#define PLC_NUM_8              0x38
+#define PLC_GROUP_NONE         0x30
+#define PLC_GROUP_1            0x31
+#define PLC_GROUP_2            0x32
+#define PLC_GROUP_3            0x33
+#define PLC_GROUP_4            0x34
+#define PLC_GROUP_5            0x35
+#define PLC_GROUP_6            0x36
+#define PLC_GROUP_7            0x37
+#define PLC_GROUP_8            0x38
+#define PLC_GROUP_9            0x39
 
 #define PLC_DEFAULT_PREAMBLE   0xFE
 
@@ -70,7 +68,7 @@
 
 #define PLC_DL645_INDEX       (PLC_FREQ_INDEX + PLC_FREQ_LEN)
 
-#define PLC_NUM_INDEX          4
+#define PLC_GROUP_INDEX        4
 #define mPLC_NUM_INDEX         5
 
 typedef enum
@@ -131,25 +129,9 @@ typedef enum
     }                                       \
 }
 
-#define LED_mPLC_ON() {                     \
-    LED_On(LED_mPLC_1);                     \
-    LED_On(LED_mPLC_2);                     \
-    LED_On(LED_mPLC_3);                     \
-    LED_On(LED_mPLC_4);                     \
-}
-
-#define LED_mPLC_OFF() {                    \
-    LED_Off(LED_mPLC_1);                    \
-    LED_Off(LED_mPLC_2);                    \
-    LED_Off(LED_mPLC_3);                    \
-    LED_Off(LED_mPLC_4);                    \
-}
-
 extern OS_EVENT *g_sem_plc;
 extern INT8U g_cur_freq, g_cur_mplc;
-extern INT8U g_plc_num, g_tmp_plc_num;
 extern bool g_sta_level_flag;
-extern INT8U g_plc_index;
 extern bool g_mplc_state[mPLC_NUM][PLC_FREQ_NUM];
 extern bool g_sta_level[mPLC_NUM][PLC_FREQ_NUM];
 

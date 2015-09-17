@@ -21,6 +21,27 @@ void assert_failed(uint8_t* file, uint32_t line)
 }
 #endif
 
+void STM32_SoftReset(void)
+{
+    __set_FAULTMASK(SET);
+    
+    NVIC_SystemReset();
+}
+
+uint32_t STM32_EncodePriority(uint32_t PreemptPriority, uint32_t SubPriority)
+{
+    uint32_t prioritygroup = 0x0;
+    
+
+    /* Check the parameters */
+    assert_param(IS_NVIC_PREEMPTION_PRIORITY(PreemptPriority));
+    assert_param(IS_NVIC_SUB_PRIORITY(SubPriority));
+
+    prioritygroup = NVIC_GetPriorityGrouping();
+    
+    return (NVIC_EncodePriority(prioritygroup, PreemptPriority, SubPriority));
+}
+
 #ifdef CFG_USE_STM32F101X
 /**
   * @brief  Sets System clock frequency to 36MHz and configure HCLK, PCLK2 
@@ -43,7 +64,7 @@ static void SetSysClockTo36(void)
   /* Wait till HSE is ready */
   HSEStartUpStatus = RCC_WaitForHSEStartUp();
 
-  if (SUCCESS == HSEStartUpStatus)
+  if (HSEStartUpStatus == SUCCESS)
   {
     /* Enable Prefetch Buffer */
     FLASH_PrefetchBufferCmd(FLASH_PrefetchBuffer_Enable);
@@ -131,7 +152,7 @@ static void SetSysClockTo72(void)
   /* Wait till HSE is ready */
   HSEStartUpStatus = RCC_WaitForHSEStartUp();
 
-  if (SUCCESS == HSEStartUpStatus)
+  if (HSEStartUpStatus == SUCCESS)
   {
     /* Enable Prefetch Buffer */
     FLASH_PrefetchBufferCmd(FLASH_PrefetchBuffer_Enable);
@@ -239,7 +260,7 @@ void NVIC_Configuration(void)
       0x08~0x0B，设置SysTick为抢占优先级2  
       0x0C~0x0F，设置SysTick为抢占优先级3  
      */
-    NVIC_SetPriority(SysTick_IRQn, SYS_TICK_PRIO);
+    NVIC_SetPriority(SysTick_IRQn, STM32_EncodePriority(SYS_TICK_PREEMPT_PRIO, SYS_TICK_SUB_PRIO));
 }
 
 void IWDG_Init(void)
@@ -255,7 +276,7 @@ void IWDG_Init(void)
     /* Enable write access to IWDG_PR and IWDG_RLR registers */
     IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);   
     
-    /* IWDG counter clock: 40KHz(LsiFreq) / 32 = 1.25KHz */
+    /* IWDG counter clock: 40KHz(LSI) / 32 = 1.25KHz */
     IWDG_SetPrescaler(IWDG_Prescaler_32);
     
     /* Set counter reload value to obtain 250ms IWDG TimeOut.
@@ -339,7 +360,7 @@ void PLC_Config(void)
 
     /* Enable and set PLC_STA EXTI Interrupt to the lowest priority */
     NVIC_InitStructure.NVIC_IRQChannel = EXTI15_10_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = EXTI11_PREEM_PRIO;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = EXTI11_PREEMPT_PRIO;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = EXTI11_SUB_PRIO;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure); 
@@ -363,7 +384,7 @@ void PLC_Config(void)
 
     /* Enable and set Button EXTI Interrupt to the lowest priority */
     NVIC_InitStructure.NVIC_IRQChannel = EXTI9_5_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = EXTI8_PREEM_PRIO;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = EXTI8_PREEMPT_PRIO;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = EXTI8_SUB_PRIO;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure); 
@@ -409,7 +430,7 @@ void USART1_Init(void)
 
     /* Enable the USARTy Interrupt */
     NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = USART1_PREEM_PRIO;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = USART1_PREEMPT_PRIO;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = USART1_SUB_PRIO;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);    
@@ -464,7 +485,7 @@ void USART2_Init(void)
 
     /* Enable the USARTy Interrupt */
     NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = USART2_PREEM_PRIO;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = USART2_PREEMPT_PRIO;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = USART2_SUB_PRIO;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);    
@@ -519,7 +540,7 @@ void USART3_Init(void)
 
     /* Enable the USARTy Interrupt */
     NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = USART3_PREEM_PRIO;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = USART3_PREEMPT_PRIO;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = USART3_SUB_PRIO;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);    
@@ -547,11 +568,32 @@ void USART3_Init(void)
     USART_Cmd(USART3, ENABLE);             
 }
 
-void STM32_SoftReset(void)
+void BSP_Init(void)
 {
-    __set_FAULTMASK(SET);
-    
-    NVIC_SystemReset();
+    /* System clocks configuration ---------------------------------------------*/
+    RCC_Configuration();
+
+    /* GPIO configuration ------------------------------------------------------*/
+    GPIO_Configuration();   
+
+    /* NVIC configuration ------------------------------------------------------*/
+    NVIC_Configuration();   
+
+#if (WDT_EN > 0u)
+    IWDG_Init();
+#endif
+
+    USART1_Init();
+    USART2_Init();
+    USART3_Init();
+
+    LED_Init();
+
+    PLC_Init();
+
+    BEEP_Init();
+
+    GUI_X_Init();
 }
 
 /*
@@ -612,35 +654,8 @@ INT32U  OS_CPU_SysTickClkFreq (void)
     return (freq);
 }
 
-void BSP_Init(void)
-{
-    /* System clocks configuration ---------------------------------------------*/
-    RCC_Configuration();
-
-    /* GPIO configuration ------------------------------------------------------*/
-    GPIO_Configuration();   
-
-    /* NVIC configuration ------------------------------------------------------*/
-    NVIC_Configuration();   
-
-#if (WDT_EN > 0u)
-    IWDG_Init();
-#endif
-
-    USART1_Init();
-    USART2_Init();
-    USART3_Init();
-
-    LED_Init();
-
-    PLC_Init();
-
-    BEEP_Init();
-
-    GUI_X_Init();
-}
-
-void MEM_Init(void)
-{
-}
-
+/*
+*********************************************************************************************************
+*                                             MODULE END
+*********************************************************************************************************
+*/

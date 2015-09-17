@@ -41,7 +41,7 @@
 #define  APP_CFG_TASK_END_PROC_PRIO            5u
 #define  APP_CFG_TASK_PLC_PRIO                 6u
 #define  APP_CFG_TASK_DISP_PRIO                7u
-#define  OS_TASK_TMR_PRIO              (OS_LOWEST_PRIO - 2)
+#define  OS_TASK_TMR_PRIO             (OS_LOWEST_PRIO - 2)
 
 /*
 *********************************************************************************************************

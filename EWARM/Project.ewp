@@ -2030,6 +2030,9 @@
       <name>$PROJ_DIR$\..\User\main.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\User\memory.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\User\plc.c</name>
     </file>
     <file>

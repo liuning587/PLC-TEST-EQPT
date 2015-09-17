@@ -55,14 +55,14 @@ const INT16U g_os_info_edit_dp[MAX_OS_INFO_EDIT_NUM] = {
     VER_EDIT_DP,
 };
 
-const INT16U g_plc_num_edit_addr[MAX_PLC_NUM_EDIT_NUM] = {
-    PLC_NUM_EDIT1_ADDR,
-    PLC_NUM_EDIT2_ADDR,
+const INT16U g_plc_group_edit_addr[MAX_PLC_GROUP_EDIT_NUM] = {
+    PLC_GROUP_EDIT1_ADDR,
+    PLC_GROUP_EDIT2_ADDR,
 };
 
-const INT16U g_plc_num_edit_dp[MAX_PLC_NUM_EDIT_NUM] = {
-    PLC_NUM_EDIT1_DP,
-    PLC_NUM_EDIT2_DP,
+const INT16U g_plc_group_edit_dp[MAX_PLC_GROUP_EDIT_NUM] = {
+    PLC_GROUP_EDIT1_DP,
+    PLC_GROUP_EDIT2_DP,
 };
 
 const INT8U LCD_READ_ID[] = {0x5a, 0xa5, 0x03, 0x81, 0x00, 0x01};
@@ -122,9 +122,9 @@ INT16U lcd_disp(INT8U *buf, INT8U len)
 INT16U LCD_postProcess(pvoid h)
 {
     P_MSG_INFO  pMsg = (P_MSG_INFO)h;
+    static  INT8U  plc_group_new = PLC_GROUP_NONE;
     INT8U  *pBuf = (UCHAR *)(pMsg->msg_buffer);
     INT16U  mLen = pMsg->msg_header.msg_len;
-    INT32U  temp;
     OS_CPU_SR_ALLOC();   
 
 
@@ -134,41 +134,18 @@ INT16U LCD_postProcess(pvoid h)
 
     if((LCD_AUTO_UPLOAD_LEN == mLen) && !(nstrcmp((char *)g_msg_buf, (char *)LCD_PARA_UPLOAD, sizeof(LCD_PARA_UPLOAD))))
     {
-        g_tmp_plc_num = g_msg_buf[LCD_AUTO_UPLOAD_LEN - 1];
+        plc_group_new = g_msg_buf[LCD_AUTO_UPLOAD_LEN - 1];
     }
 
     if((LCD_AUTO_UPLOAD_LEN == mLen) && !(nstrcmp((char *)g_msg_buf, (char *)LCD_OK_UPLOAD, sizeof(LCD_OK_UPLOAD))))
     {
-        if((g_tmp_plc_num >= PLC_NUM_1) && (g_tmp_plc_num <= PLC_NUM_8))
+        if((plc_group_new >= PLC_GROUP_1) && (plc_group_new <= PLC_GROUP_9))
         {
-            if(g_plc_num != g_tmp_plc_num)
+            if(g_mem_para.plc_group != plc_group_new)
             {
-                temp = g_tmp_plc_num;
+                g_mem_para.plc_group = plc_group_new;
 
-                if(TRUE == plc_write_para(&temp))
-                {
-                    if(TRUE == plc_read_para(&temp))
-                    {
-                        temp &= 0xff;
-
-                        if(temp == g_tmp_plc_num)
-                        {
-                            g_plc_num = temp;
-                        }
-                        else
-                        {
-                            g_plc_num = g_tmp_plc_num;
-                        }
-                    }
-                    else
-                    {
-                        g_plc_num = g_tmp_plc_num;
-                    }
-                }
-                else
-                {
-                    g_plc_num = g_tmp_plc_num;
-                }
+                mem_param_write();
 
                 STM32_SoftReset();
             }

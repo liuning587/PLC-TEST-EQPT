@@ -486,9 +486,7 @@ void UART_IRQProc(UART_CCB *uccb, USART_TypeDef *UARTx)
         //可以考虑加错误统计
     } 
     
-#if (LED_UART_EN > 0u)
     LED_UART_ON();
-#endif
   }
 
   if(USART_GetITStatus(UARTx, USART_IT_TXE) != RESET)
@@ -505,10 +503,7 @@ void UART_IRQProc(UART_CCB *uccb, USART_TypeDef *UARTx)
         USART_ITConfig(UARTx, USART_IT_TXE, DISABLE);
     }
 
-#if (LED_UART_EN > 0u)
     LED_UART_ON();
-#endif	
   }
 }
-
 

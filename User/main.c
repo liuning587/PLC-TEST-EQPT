@@ -181,9 +181,7 @@ static  void  App_TaskEndTick (void *p_arg)
     while (DEF_TRUE) {    
         End_tick_check();
         
-#if (LED_UART_EN > 0u)
         LED_UART_OFF();
-#endif
 
         OSTimeDlyHMSM(0, 0, 0, 20);
     }
@@ -267,17 +265,17 @@ static  void  App_TaskPlc (void *p_arg)
         
         for(j = 0; j < mPLC_RESET_NUM; j++)
         {
+            while(OSSemAccept(g_sem_plc));
+            
             mPLC_RESET_LOW();
             OSTimeDlyHMSM(0, 0, 0, 300);
             mPLC_RESET_HIGH();
-            
-            while(OSSemAccept(g_sem_plc));
-            
+                        
             OSSemPend(g_sem_plc, OS_TICKS_PER_SEC, &err);
             
             if(OS_ERR_NONE == err)
             {
-                OSTimeDlyHMSM(0, 0, 0, 100);
+                OSTimeDlyHMSM(0, 0, 0, 300);
             }
             else
             {
@@ -381,16 +379,16 @@ static  void  App_TaskDisp (void *p_arg)
             LED_DISP_OFF();
         }
 
-        for(i = 0; i < (MAX_PLC_NUM_EDIT_NUM - 1); i++)
+        for(i = 0; i < (MAX_PLC_GROUP_EDIT_NUM - 1); i++)
         {
         	memcpy(g_color_buf, g_color_code, sizeof(g_color_code));            
             memcpy(g_font_buf, g_font_code, sizeof(g_font_code));
                     	
-        	g_color_buf[EDIT_DP_HIGH_INDEX] = (g_plc_num_edit_dp[i] >> 8) & 0xff;
-        	g_color_buf[EDIT_DP_LOW_INDEX]	= ((g_plc_num_edit_dp[i] >> 0) & 0xff) | 0x03;	
+        	g_color_buf[EDIT_DP_HIGH_INDEX] = (g_plc_group_edit_dp[i] >> 8) & 0xff;
+        	g_color_buf[EDIT_DP_LOW_INDEX]	= ((g_plc_group_edit_dp[i] >> 0) & 0xff) | 0x03;	
 
-        	g_font_buf[EDIT_ADDR_HIGH_INDEX] = (g_plc_num_edit_addr[i] >> 8) & 0xff;
-        	g_font_buf[EDIT_ADDR_LOW_INDEX]	= (g_plc_num_edit_addr[i] >> 0) & 0xff;	
+        	g_font_buf[EDIT_ADDR_HIGH_INDEX] = (g_plc_group_edit_addr[i] >> 8) & 0xff;
+        	g_font_buf[EDIT_ADDR_LOW_INDEX]	= (g_plc_group_edit_addr[i] >> 0) & 0xff;	
 
             color = LCD_COLOR_WHITE;
 
@@ -399,46 +397,46 @@ static  void  App_TaskDisp (void *p_arg)
             g_color_buf[EDIT_DATA_INDEX] = color >> 8;
             g_color_buf[EDIT_DATA_INDEX + 1] = color >> 0;
 
-            OS_ENTER_CRITICAL();
-            g_plc_index = get_plc_index(g_plc_num);
-            OS_EXIT_CRITICAL();
-
-            switch(g_plc_num)
+            switch(g_mem_para.plc_group)
             {
-            case PLC_NUM_1:
+            case PLC_GROUP_1:
                 sprintf((char *)(&g_font_buf[EDIT_DATA_INDEX]), "一");
                 break;
 
-            case PLC_NUM_2:
+            case PLC_GROUP_2:
                 sprintf((char *)(&g_font_buf[EDIT_DATA_INDEX]), "二");
                 break;
 
-            case PLC_NUM_3:
+            case PLC_GROUP_3:
                 sprintf((char *)(&g_font_buf[EDIT_DATA_INDEX]), "三");
                 break;
 
-            case PLC_NUM_4:
+            case PLC_GROUP_4:
                 sprintf((char *)(&g_font_buf[EDIT_DATA_INDEX]), "四");
                 break;
 
-            case PLC_NUM_5:
+            case PLC_GROUP_5:
                 sprintf((char *)(&g_font_buf[EDIT_DATA_INDEX]), "五");
                 break;
 
-            case PLC_NUM_6:
+            case PLC_GROUP_6:
                 sprintf((char *)(&g_font_buf[EDIT_DATA_INDEX]), "六");
                 break;
 
-            case PLC_NUM_7:
+            case PLC_GROUP_7:
                 sprintf((char *)(&g_font_buf[EDIT_DATA_INDEX]), "七");
                 break;
 
-            case PLC_NUM_8:
+            case PLC_GROUP_8:
                 sprintf((char *)(&g_font_buf[EDIT_DATA_INDEX]), "八");
                 break;             
 
+            case PLC_GROUP_9:
+                sprintf((char *)(&g_font_buf[EDIT_DATA_INDEX]), "九");
+                break;
+
             default:
-                sprintf((char *)(&g_font_buf[EDIT_DATA_INDEX]), "一");
+                sprintf((char *)(&g_font_buf[EDIT_DATA_INDEX]), "空");
                 break;
             }
             

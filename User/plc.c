@@ -23,9 +23,7 @@ const INT8U mPLC_REPLY_ENERGY[] = {0x68, 0x62, 0x33, 0x19, 0x00, 0x00, 0x00, 0x6
 
 OS_EVENT *g_sem_plc;
 INT8U g_cur_freq, g_cur_mplc;
-INT8U g_plc_num, g_tmp_plc_num;
 bool g_sta_level_flag;
-INT8U g_plc_index;
 
 bool g_mplc_state[mPLC_NUM][PLC_FREQ_NUM] = {
 	/* {PLC_FREQ_270KHz, PLC_FREQ_421KHz} */
@@ -55,9 +53,6 @@ const INT8U mPLC_ENERGY[20] = {0x30, 0x36, 0x00, 0x00, 0x56, 0x02, 0x00, 0x00, 0
 
 void PLC_Init(void)
 {
-    INT32U  temp;
-
-    
     PLC_Config();
 
     mPLC_PWR_ON();
@@ -65,27 +60,7 @@ void PLC_Init(void)
     mPLC_EVENT_LOW();
     mPLC_SELECT_EN();
 
-    if(TRUE == plc_read_para(&temp))
-    {
-        temp &= 0xff;
-
-        if((temp >= PLC_NUM_1) && (temp <= PLC_NUM_8))
-        {
-            g_plc_num = temp;
-        }
-        else
-        {
-            g_plc_num = PLC_NUM_1;
-        }
-    }
-    else
-    {
-        g_plc_num = PLC_NUM_1;
-    }
-
-    g_plc_index = get_plc_index(g_plc_num);
-
-    g_cur_mplc = mPLC_NUM_1;
+    g_cur_mplc = mPLC_1;
     g_cur_freq = PLC_FREQ_270KHz;    
 }
 
@@ -97,7 +72,7 @@ void cplc_read_energy_proc(void)
 
     memcpy(dev_addr, mPLC_ADDR, sizeof(mPLC_ADDR));
 
-    dev_addr[PLC_NUM_INDEX] = g_plc_index;
+    dev_addr[PLC_GROUP_INDEX] = g_mem_para.plc_group;
     dev_addr[mPLC_NUM_INDEX] = g_cur_mplc;
 
     ctrl_code = PLC_READ_DATA;
@@ -156,7 +131,7 @@ void mplc_assign_addr_proc(void)
 
     memcpy(dev_addr, mPLC_ADDR, sizeof(mPLC_ADDR));
 
-    dev_addr[PLC_NUM_INDEX] = g_plc_index;
+    dev_addr[PLC_GROUP_INDEX] = g_mem_para.plc_group;
     dev_addr[mPLC_NUM_INDEX] = g_cur_mplc;
 
     ctrl_code = PLC_BROAD_REPLY_ADDR;
@@ -204,7 +179,7 @@ void mplc_reply_energy_proc(void)
 
     memcpy(dev_addr, mPLC_ADDR, sizeof(mPLC_ADDR));
 
-    dev_addr[PLC_NUM_INDEX] = g_plc_index;
+    dev_addr[PLC_GROUP_INDEX] = g_mem_para.plc_group;
     dev_addr[mPLC_NUM_INDEX] = g_cur_mplc;
 
     ctrl_code = PLC_REPLY_DATA;
