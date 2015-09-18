@@ -592,8 +592,6 @@ void BSP_Init(void)
     PLC_Init();
 
     BEEP_Init();
-
-    GUI_X_Init();
 }
 
 /*

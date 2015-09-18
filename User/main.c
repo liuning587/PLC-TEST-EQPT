@@ -106,7 +106,9 @@ static  void  App_TaskStart (void *p_arg)
 
 #if (OS_TASK_STAT_EN > 0)
     OSStatInit();                                               /* Determine CPU capacity                                   */
-#endif   
+#endif
+
+    GUI_X_Init();
 
     MEM_Init();
 
@@ -596,7 +598,7 @@ static  void  App_EventCreate (void)
     g_sem_end = OSSemCreate(0);
     g_sem_disp = OSSemCreate(0);
     g_sem_plc = OSSemCreate(0);    
-    g_sem_key = OSSemCreate(0);
+    g_key_para.sem = OSSemCreate(0);
 }
 
 /*

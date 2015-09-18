@@ -16,7 +16,7 @@
 #define MAX_mPLC_STATE_EDIT_NUM   8
 #define MAX_ERR_EDIT_NUM          8
 #define MAX_OS_INFO_EDIT_NUM      2
-#define MAX_PLC_GROUP_EDIT_NUM      2
+#define MAX_PLC_GROUP_EDIT_NUM    2
 
 
 #define mPLC_STATE_EDIT1_ADDR     0x0000 //±äÁ¿µØÖ·£¬ºº×Ö£¬21

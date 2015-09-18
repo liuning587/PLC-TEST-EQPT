@@ -143,28 +143,28 @@ void SysTick_Handler(void)
 }
 
 /**
-  * @brief  This function handles EXTI9_5 IRQ Handler.
+  * @brief  This function handles External lines 9 to 5 interrupt request.
   * @param  None
   * @retval None
   */
 void EXTI9_5_IRQHandler(void)
 {
-    if(EXTI_GetITStatus(EXTI_Line8) != RESET) 
+    if(RESET != EXTI_GetITStatus(EXTI_Line8)) 
     { 
         EXTI_ClearITPendingBit(EXTI_Line8);
         
-        GUI_X_StoreKey(EXTI_Line8);
+        GUI_X_StoreKey(KEY_RESET_PORT, KEY_MSG_RESET);
     }     
 }
 
 /**
-  * @brief  This function handles EXTI15_10 IRQ Handler.
+  * @brief  This function handles External lines 15 to 10 interrupt request.
   * @param  None
   * @retval None
   */
 void EXTI15_10_IRQHandler(void)
 {
-    if(EXTI_GetITStatus(EXTI_Line11) != RESET) 
+    if(RESET != EXTI_GetITStatus(EXTI_Line11)) 
     { 
         EXTI_ClearITPendingBit(EXTI_Line11);    
 

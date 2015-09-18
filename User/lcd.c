@@ -122,7 +122,7 @@ INT16U lcd_disp(INT8U *buf, INT8U len)
 INT16U LCD_postProcess(pvoid h)
 {
     P_MSG_INFO  pMsg = (P_MSG_INFO)h;
-    static  INT8U  plc_group_new = PLC_GROUP_NONE;
+    static  INT32U  plc_group_new = PLC_GROUP_NONE;
     INT8U  *pBuf = (UCHAR *)(pMsg->msg_buffer);
     INT16U  mLen = pMsg->msg_header.msg_len;
     OS_CPU_SR_ALLOC();   
@@ -145,7 +145,7 @@ INT16U LCD_postProcess(pvoid h)
             {
                 g_mem_para.plc_group = plc_group_new;
 
-                mem_param_write();
+                mem_para_write();
 
                 STM32_SoftReset();
             }

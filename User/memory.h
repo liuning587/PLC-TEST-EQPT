@@ -6,17 +6,25 @@
 #endif
 
 
-#define MEM_PARA_DATE                   0x20150917
+#define MEM_PARA_DATE                   0x20150918
 
 #define MEM_PARA_TAG                    0x19890924
 #define MAX_PARA_NUM                    16 //16 * 4B = 64B
 #define MEM_PARA_SIZE                  (sizeof(MEM_PARA)) //64B
 
-#define PLC_GROUP_DEFAULT               PLC_GROUP_NONE
+#define MEM_PARA_TAG_INDEX              0
+#define MEM_PARA_CRC_INDEX              1
+#define MEM_PARA_DATE_INDEX             2
+
+#define SINGLE_PARA_SIZE                4
+
+#define CHECKSUM_MEM_PARA_SIZE         (MEM_PARA_SIZE - 2 * SINGLE_PARA_SIZE)
 
 #define MEM_PARA_PAGE_ADDR             (0x08018C00ul)
 #define MEM_PARA_PAGE_SIZE             (1 * 1024) //1KB
 #define MEM_PARA_PROGRAM_TIMES         (MEM_PARA_PAGE_SIZE / MEM_PARA_SIZE) //1024 / 64 = 16
+
+#define PLC_GROUP_DEFAULT               PLC_GROUP_NONE
 
 typedef struct
 {
@@ -26,13 +34,13 @@ typedef struct
 
     unsigned int plc_group;
 
-    unsigned int param_reserve[MAX_PARA_NUM - 4];
+    unsigned int para_reserve[MAX_PARA_NUM - 4];
 } MEM_PARA, *P_MEM_PARA;
 
 extern MEM_PARA g_mem_para;
 
-unsigned int mem_param_write(void);
-void mem_param_read(void);
+unsigned int mem_para_write(void);
+void mem_para_read(void);
 void MEM_Init(void);
 
 

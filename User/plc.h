@@ -61,6 +61,7 @@
 #define PLC_READ_DATA          0x11
 #define PLC_REPLY_DATA         0x91
 
+#define DEV_ADDR_CHK_SAME      2
 #define PLC_DATA_BLOCK_ITEM    0x0001FF00
 
 #define PLC_FREQ_INDEX         0
@@ -136,6 +137,7 @@ extern bool g_mplc_state[mPLC_NUM][PLC_FREQ_NUM];
 extern bool g_sta_level[mPLC_NUM][PLC_FREQ_NUM];
 
 void PLC_Init(void);
+bool get_mplc_state(void);
 INT16U cplc_read_energy(void);
 INT16U cPLC_postProcess(pvoid h);
 INT16U mPLC_postProcess(pvoid h);

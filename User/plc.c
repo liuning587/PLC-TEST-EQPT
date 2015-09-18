@@ -64,16 +64,47 @@ void PLC_Init(void)
     g_cur_freq = PLC_FREQ_270KHz;    
 }
 
+bool get_mplc_state(void)
+{
+    bool  *ptr;
+    INT8U  i;
+
+
+    ptr = (bool *)g_mplc_state;
+
+    for(i = 0; i < MAX_mPLC_STATE_EDIT_NUM; i++)
+    {
+        if(FALSE == *ptr)
+        {
+            return (FALSE);
+        }
+
+        ptr++;
+    }
+
+    return (TRUE);
+}
+
+void get_mplc_addr(INT8U *addr)
+{
+    if(NULL == addr)
+    {
+        return;
+    }
+    
+    memcpy(addr, mPLC_ADDR, sizeof(mPLC_ADDR));
+
+    addr[PLC_GROUP_INDEX] = g_mem_para.plc_group;
+    addr[mPLC_NUM_INDEX] = g_cur_mplc;
+}
+
 void cplc_read_energy_proc(void)
 {
     INT8U  ctrl_code, data_len, dev_addr[6];
     INT32U  plc_data_item;
 
 
-    memcpy(dev_addr, mPLC_ADDR, sizeof(mPLC_ADDR));
-
-    dev_addr[PLC_GROUP_INDEX] = g_mem_para.plc_group;
-    dev_addr[mPLC_NUM_INDEX] = g_cur_mplc;
+    get_mplc_addr(dev_addr);
 
     ctrl_code = PLC_READ_DATA;
 
@@ -129,10 +160,7 @@ void mplc_assign_addr_proc(void)
     INT8U  ctrl_code, data_len, dev_addr[6];
 
 
-    memcpy(dev_addr, mPLC_ADDR, sizeof(mPLC_ADDR));
-
-    dev_addr[PLC_GROUP_INDEX] = g_mem_para.plc_group;
-    dev_addr[mPLC_NUM_INDEX] = g_cur_mplc;
+    get_mplc_addr(dev_addr);
 
     ctrl_code = PLC_BROAD_REPLY_ADDR;
 
@@ -177,10 +205,7 @@ void mplc_reply_energy_proc(void)
     INT32U  plc_data_item;
 
 
-    memcpy(dev_addr, mPLC_ADDR, sizeof(mPLC_ADDR));
-
-    dev_addr[PLC_GROUP_INDEX] = g_mem_para.plc_group;
-    dev_addr[mPLC_NUM_INDEX] = g_cur_mplc;
+    get_mplc_addr(dev_addr);
 
     ctrl_code = PLC_REPLY_DATA;
 
@@ -220,10 +245,12 @@ INT16U mplc_reply_energy(void)
 
 INT8U proto_check_frame(void)
 {
-    INT8U  result;
+    INT8U  result, dev_addr[6];
+
+
+    get_mplc_addr(dev_addr);
     
-    
-    if(DL645_FRAME_ERROR == Analysis_DL645_Frame((INT8U *)mPLC_ADDR, 
+    if(DL645_FRAME_ERROR == Analysis_DL645_Frame((INT8U *)dev_addr, 
                                                  (INT8U *)&plc_frame_recv,
                                                   &plc_frame_stat))
     {
@@ -251,7 +278,7 @@ void cplc_recv_msg_proc(INT8U *pBuf, INT16U mLen)
         case PLC_REPLY_DATA:
             plc_data_item = ((INT32U)plc_frame_recv.Data[3] << 24) | ((INT32U)plc_frame_recv.Data[2] << 16) | ((INT32U)plc_frame_recv.Data[1] << 8) | ((INT32U)plc_frame_recv.Data[0] << 0);
 
-            if(PLC_DATA_BLOCK_ITEM == plc_data_item)
+            if((DEV_ADDR_CHK_SAME == plc_frame_stat.Status) && (PLC_DATA_BLOCK_ITEM == plc_data_item))
             {
                 LED_PLC_TOGGLE();
                 
@@ -311,7 +338,7 @@ void mplc_recv_msg_proc(INT8U *pBuf, INT16U mLen)
         case PLC_READ_DATA:
             plc_data_item = ((INT32U)plc_frame_recv.Data[3] << 24) | ((INT32U)plc_frame_recv.Data[2] << 16) | ((INT32U)plc_frame_recv.Data[1] << 8) | ((INT32U)plc_frame_recv.Data[0] << 0);
 
-            if(PLC_DATA_BLOCK_ITEM == plc_data_item)
+            if((DEV_ADDR_CHK_SAME == plc_frame_stat.Status) && (PLC_DATA_BLOCK_ITEM == plc_data_item))
             {
                 mplc_reply_energy();
             }

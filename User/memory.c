@@ -27,12 +27,12 @@ const MEM_PARA g_mem_para_default =
     }
 };
 
-unsigned int CalcCRC(unsigned char *buf, unsigned int crc)
+unsigned int CalcCRC(unsigned char data, unsigned int crc)
 {
     unsigned char i, chk;
 
 
-    crc = crc ^ *buf;
+    crc = crc ^ data;
 
     for(i = 0; i < 8; i++)
     {        
@@ -64,7 +64,7 @@ unsigned int Get_Checksum(unsigned char *buf, unsigned int len)
 
     for(i = 0; i < len; i++) 
     { 
-        crc = CalcCRC(ptr, crc); 
+        crc = CalcCRC(*ptr, crc); 
 
         ptr++; 
     } 
@@ -97,7 +97,7 @@ unsigned int mem_verify_blank(void *mem_addr, unsigned int len)
     return (TRUE);
 }
 
-void *mem_param_cpy(void *dest_addr, const void *src_addr, unsigned int count)
+void *mem_para_cpy(void *dest_addr, const void *src_addr, unsigned int count)
 {
     unsigned int i;
     char *dest = dest_addr;
@@ -122,27 +122,29 @@ void *mem_param_cpy(void *dest_addr, const void *src_addr, unsigned int count)
     return (dest_addr);
 }
 
-unsigned int mem_param_write(void)
+unsigned int mem_para_write(void)
 {
-    unsigned int i, *p_mem_param, n = 0, addr, *src_addr;
+    unsigned int i, *p_mem_para, n = 0, addr, *src_addr;
     FLASH_Status status;
 
 
     FLASH_Unlock();
 
-    g_mem_para.crc = Get_Checksum((unsigned char *)&g_mem_para.date, MEM_PARA_SIZE - 8);
+    g_mem_para.crc = Get_Checksum((unsigned char *)&g_mem_para.date, CHECKSUM_MEM_PARA_SIZE);
 
     while(n < MEM_PARA_PROGRAM_TIMES)
     {
-        p_mem_param = (unsigned int *)((unsigned int)MEM_PARA_PAGE_ADDR + n * MEM_PARA_SIZE);
+        p_mem_para = (unsigned int *)((unsigned int)MEM_PARA_PAGE_ADDR + n * MEM_PARA_SIZE);
 
-        if(TRUE == mem_verify_blank(p_mem_param, MEM_PARA_SIZE / 4))
+        if(TRUE == mem_verify_blank(p_mem_para, MEM_PARA_SIZE / SINGLE_PARA_SIZE))
         {
-            addr = (unsigned int)p_mem_param;
+            addr = (unsigned int)p_mem_para;
             src_addr = (unsigned int *)&g_mem_para;
 
-            for(i = 0; i < (MEM_PARA_SIZE / 4); i++)
+            for(i = 0; i < (MEM_PARA_SIZE / SINGLE_PARA_SIZE); i++)
             {
+                clr_wdt();
+                
                 status = FLASH_ProgramWord(addr, *src_addr);
 
                 if(FLASH_COMPLETE != status)
@@ -152,7 +154,7 @@ unsigned int mem_param_write(void)
                     return (FALSE);
                 }
 
-                addr += 4;
+                addr += SINGLE_PARA_SIZE;
                 src_addr++;
             }
 
@@ -163,6 +165,8 @@ unsigned int mem_param_write(void)
 
         n++;
     }
+
+    clr_wdt();
 
     status = FLASH_ErasePage(MEM_PARA_PAGE_ADDR);
 
@@ -176,8 +180,10 @@ unsigned int mem_param_write(void)
     addr = (unsigned int)MEM_PARA_PAGE_ADDR;
     src_addr = (unsigned int *)&g_mem_para;
 
-    for(i = 0; i < (MEM_PARA_SIZE / 4); i++)
+    for(i = 0; i < (MEM_PARA_SIZE / SINGLE_PARA_SIZE); i++)
     {
+        clr_wdt();
+        
         status = FLASH_ProgramWord(addr, *src_addr);
 
         if(FLASH_COMPLETE != status)
@@ -187,7 +193,7 @@ unsigned int mem_param_write(void)
             return (FALSE);
         }
 
-        addr += 4;
+        addr += SINGLE_PARA_SIZE;
         src_addr++;
     }    
     
@@ -196,24 +202,24 @@ unsigned int mem_param_write(void)
     return (TRUE);
 }
 
-void mem_param_read(void)
+void mem_para_read(void)
 {
-    unsigned int *p_mem_param, crc, n = MEM_PARA_PROGRAM_TIMES;
+    unsigned int *p_mem_para, crc, n = MEM_PARA_PROGRAM_TIMES;
 
 
     while(n--)
     {
-        p_mem_param = (unsigned int *)((unsigned int)MEM_PARA_PAGE_ADDR + (n * MEM_PARA_SIZE));
+        p_mem_para = (unsigned int *)((unsigned int)MEM_PARA_PAGE_ADDR + (n * MEM_PARA_SIZE));
 
-        if(MEM_PARA_TAG == p_mem_param[0])
+        if(MEM_PARA_TAG == p_mem_para[MEM_PARA_TAG_INDEX])
         {
-            crc = Get_Checksum((unsigned char *)&p_mem_param[2], (MEM_PARA_SIZE - 8));
+            crc = Get_Checksum((unsigned char *)&p_mem_para[MEM_PARA_DATE_INDEX], CHECKSUM_MEM_PARA_SIZE);
 
-            if(p_mem_param[1] == crc)
+            if(p_mem_para[MEM_PARA_CRC_INDEX] == crc)
             {
-                if(p_mem_param[2] >= g_mem_para.date)
+                if(p_mem_para[MEM_PARA_DATE_INDEX] >= g_mem_para.date)
                 {
-                    mem_param_cpy(&g_mem_para, p_mem_param, MEM_PARA_SIZE);
+                    mem_para_cpy(&g_mem_para, p_mem_para, MEM_PARA_SIZE);
                 }
                 else
                 {
@@ -225,11 +231,11 @@ void mem_param_read(void)
         }
     }
 
-    mem_param_write();
+    mem_para_write();
 }
 
 void MEM_Init(void)
 {
-    mem_param_read();
+    mem_para_read();
 }
 
